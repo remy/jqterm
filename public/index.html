@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>jace: jq as a service</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.28.0/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.28.0/mode/javascript/javascript.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.28.0/codemirror.css">
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/theme.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+
+<body class="theme-dark">
+  <main>
+    <div id="input">
+      <textarea placeholder="> jq query">.</textarea>
+    </div>
+    <div id="source">
+      <textarea class="cm-target" placeholder="your source json">
+{ "tip": "see /example for a demo" }</textarea>
+    </div>
+    <div id="result">
+      <textarea class="cm-target" readonly></textarea>
+    </div>
+  </main>
+  <script src="/static/client.js"></script>
+</body>
+</html>

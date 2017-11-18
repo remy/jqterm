@@ -1,0 +1,29 @@
+{
+  "name": "jq-service",
+  "version": "1.0.0",
+  "description": "A jq service",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.16.2",
+    "node-jq": "^0.7.0",
+    "uuid": "^3.1.0",
+    "body-parser": "^1.18.2",
+    "gist": "^0.2.0",
+    "cors": "^2.8.4"
+  },
+  "engines": {
+    "node": "8.x"
+  },
+  "repository": {
+    "url": "https://glitch.com/edit/#!/welcome-project"
+  },
+  "license": "MIT",
+  "keywords": [
+    "node",
+    "glitch",
+    "express"
+  ]
+}

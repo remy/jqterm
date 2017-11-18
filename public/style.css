@@ -1,0 +1,63 @@
+* {
+  font-family: "Operator Mono", Courier New, Courier, monospace;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+body,
+html,
+main {
+  margin: 0;
+  height: 100%;
+}
+
+main {
+  display: grid;
+  position: relative;
+  grid-template-rows: 1fr 90fr;
+  grid-template-columns: 10fr 10fr;
+  grid-gap: 3px;
+  background: #eee;
+}
+
+main>div {
+  width: auto;
+  border: 0;
+  display: block;
+  position: relative;
+  outline: none;
+  background: #f7f7f7;
+}
+
+.CodeMirror {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+textarea:focus {
+  background: white;
+}
+
+#input {
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  min-height: 30px;
+  line-height: 24px;
+  grid-column: 1 / -1;
+}
+
+#source {
+  grid-column: 1;
+  grid-row: 2;
+  display: flex;
+}
+
+#result {
+  grid-column: 2;
+  grid-row: 2;
+}

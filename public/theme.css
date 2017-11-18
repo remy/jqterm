@@ -1,0 +1,196 @@
+@charset "UTF-8";
+.theme-dark main {
+  background: black;
+}
+.theme-dark .CodeMirror {
+  /*
+    Name:       one-dark
+    Original Author:     Török Ádám (http://github.com/Aerobird98)
+
+    Original Atom One Dark Theme (https://github.com/atom/one-dark-syntax & https://github.com/atom/one-dark-ui)
+
+    Modifications by Remy Sharp (sorry!)
+*/
+  /* UI Theme /----------------------------------------------------------------------------------- */
+  /* Gutter & Folding */
+  /* ...folding addon: fold/...  */
+  /* ...misc */
+  /* Cursor */
+  /* Popular addons */
+  /* addon: adit/machingbrackets.js & addon: edit/matchtags.js   */
+  /* Syntax Theme /---------------------------------------------------------------------------------- */
+  /* markdown */
+  /* xml, html, ... */
+  /* other ... (for example javascript) */
+  /* original:  #d19a66; */
+  /* original: #abb2bf */
+}
+.theme-dark .CodeMirror,
+.theme-dark .CodeMirror .CodeMirror-scroll {
+  background: #282c34;
+  color: #abb2bf;
+}
+.theme-dark .CodeMirror .CodeMirror-selected {
+  background: #494e5d;
+}
+.theme-dark .CodeMirror .CodeMirror-lines {
+  padding: 4px 0;
+  /* Vertical padding around content */
+}
+.theme-dark .CodeMirror pre {
+  padding: 0 4px;
+  /* Horizontal padding of content */
+}
+.theme-dark .CodeMirror .CodeMirror-gutters,
+.theme-dark .CodeMirror .CodeMirror-gutter {
+  white-space: nowrap;
+  border: none;
+  background: transparent;
+}
+.theme-dark .CodeMirror .CodeMirror-linenumber {
+  /* padding: 0 30px 0 30px; */
+  background: #282c34;
+  min-width: 20px;
+  text-align: right;
+  white-space: nowrap;
+  color: #abb2bf;
+}
+.theme-dark .CodeMirror .CodeMirror-foldmarker {
+  line-height: 0.3;
+  cursor: pointer;
+  color: #abb2bf;
+  background: rgba(204, 217, 255, 0.05);
+}
+.theme-dark .CodeMirror .CodeMirror-foldgutter {
+  width: 15px;
+  border: none;
+}
+.theme-dark .CodeMirror .CodeMirror-foldgutter-open,
+.theme-dark .CodeMirror .CodeMirror-foldgutter-folded {
+  cursor: pointer;
+}
+.theme-dark .CodeMirror .CodeMirror-foldgutter-open:after {
+  content: '\25BE';
+  color: #393e46;
+}
+.theme-dark .CodeMirror .CodeMirror.over-gutter,
+.theme-dark
+  .CodeMirror
+  .CodeMirror-activeline
+  .CodeMirror-foldgutter-open:after {
+  color: #5c6370;
+}
+.theme-dark .CodeMirror .CodeMirror-foldgutter-folded:after {
+  content: '\25B8';
+  color: #5c6370;
+}
+.theme-dark .CodeMirror .CodeMirror-scrollbar-filler,
+.theme-dark .CodeMirror .CodeMirror-gutter-filler {
+  background-color: #ccc;
+  /* The little square between H and V scrollbars */
+}
+.theme-dark .CodeMirror .CodeMirror-cursor {
+  border-left: 2px solid #528bff !important;
+}
+.theme-dark .CodeMirror .CodeMirror-overwrite .CodeMirror-cursor {
+  border-left: none !important;
+  border-bottom: 1px solid #fff;
+}
+.theme-dark .CodeMirror .CodeMirror-matchingbracket,
+.theme-dark .CodeMirror .CodeMirror-matchingtag {
+  /* Ensure visibility against gray inline editor background */
+  background-color: rgba(204, 217, 255, 0.09);
+  color: #abb2bf !important;
+  border-bottom: 1px solid #528bff;
+}
+.theme-dark .CodeMirror .cm-header {
+  color: #e06c75;
+}
+.theme-dark .CodeMirror .cm-quote {
+  color: #5c6370;
+  font-style: italic;
+}
+.theme-dark .CodeMirror .cm-negative {
+  color: #e06c75;
+}
+.theme-dark .CodeMirror .cm-positive {
+  color: #e06c75;
+}
+.theme-dark .CodeMirror .cm-strong {
+  color: #d19a66;
+  font-weight: bold;
+}
+.theme-dark .CodeMirror .cm-header .cm-strong {
+  color: #d19a66;
+  font-weight: bold;
+}
+.theme-dark .CodeMirror .cm-em {
+  color: #c678dd;
+  font-style: italic;
+}
+.theme-dark .CodeMirror .cm-header .cm-em {
+  color: #c678dd;
+  font-style: italic;
+}
+.theme-dark .CodeMirror .cm-tag {
+  color: #e06c75;
+}
+.theme-dark .CodeMirror .cm-attribute {
+  color: #d19a66;
+}
+.theme-dark .CodeMirror .cm-link {
+  color: #98c379;
+  border-bottom: solid 1px #98c379;
+}
+.theme-dark .CodeMirror .cm-builtin {
+  color: #e06c75;
+}
+.theme-dark .CodeMirror .cm-keyword {
+  color: #c678dd;
+}
+.theme-dark .CodeMirror .cm-def {
+  color: #e5c07b;
+}
+.theme-dark .CodeMirror .cm-atom {
+  color: #d19a66;
+}
+.theme-dark .CodeMirror .cm-number {
+  color: #d19a66;
+}
+.theme-dark .CodeMirror .cm-property {
+  color: #61afef;
+}
+.theme-dark .CodeMirror .cm-qualifier {
+  color: #d19a66;
+}
+.theme-dark .CodeMirror .cm-variable {
+  color: #e06c75;
+}
+.theme-dark .CodeMirror .cm-variable-2 {
+  color: #abb2bf;
+}
+.theme-dark .CodeMirror .cm-variable-3 {
+  color: #e5c07b;
+}
+.theme-dark .CodeMirror .cm-string {
+  color: #98c379;
+}
+.theme-dark .CodeMirror .cm-string-2 {
+  color: #98c379;
+}
+.theme-dark .CodeMirror .cm-punctuation {
+  color: #abb2bf;
+}
+.theme-dark .CodeMirror .cm-operator {
+  color: #abb2bf;
+}
+.theme-dark .CodeMirror .cm-meta {
+  color: #abb2bf;
+}
+.theme-dark .CodeMirror .cm-bracket {
+  color: #abb2bf;
+}
+.theme-dark .CodeMirror .cm-comment {
+  color: #5c6370;
+  font-style: italic;
+}
