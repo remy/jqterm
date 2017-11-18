@@ -27,10 +27,10 @@ source.on('change', cm => {
   dirty = true;
 });
 
-async function updateData(source) {
+async function updateData(body) {
   const res = await fetch(window.location.pathname, {
     method: 'post',
-    body: JSON.stringify({ source }),
+    body,
   });
   const json = await res.json();
   if (json.id) {

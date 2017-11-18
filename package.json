@@ -1,5 +1,5 @@
 {
-  "name": "jq-service",
+  "name": "jace",
   "version": "1.0.0",
   "description": "A jq service",
   "main": "server.js",
@@ -21,9 +21,5 @@
     "url": "https://glitch.com/edit/#!/welcome-project"
   },
   "license": "MIT",
-  "keywords": [
-    "node",
-    "glitch",
-    "express"
-  ]
+  "keywords": ["node", "glitch", "express"]
 }

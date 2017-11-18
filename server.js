@@ -1,5 +1,5 @@
 const express = require('express');
-const { json } = require('body-parser');
+const bodyParser = require('body-parser');
 const uuid = require('uuid');
 const app = express();
 const jq = require('node-jq');
@@ -8,7 +8,7 @@ const cors = require('cors');
 const tmpdir = require('os').tmpdir();
 
 app.use(cors());
-app.use(json({ type: '*/*' }));
+app.use(bodyParser.raw({ type: '*/*', limit: '50mb' }));
 
 function getFilename(id) {
   if (id === 'example') {
@@ -33,7 +33,7 @@ app.use('/static', express.static('public'));
 // could also use the POST body instead of query string: http://expressjs.com/en/api.html#req.body
 app.post(['/', '/:id'], (req, res) => {
   const id = req.params.id || uuid.v4();
-  fs.writeFile(`${tmpdir}/${id}.json`, req.body.source, 'utf8', error => {
+  fs.writeFile(`${tmpdir}/${id}.json`, req.body, 'utf8', error => {
     if (error) console.log(error);
   });
   res.json({ id });
