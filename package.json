@@ -21,5 +21,11 @@
     "url": "https://glitch.com/edit/#!/welcome-project"
   },
   "license": "MIT",
-  "keywords": ["node", "glitch", "express"]
+  "keywords": [
+    "node",
+    "glitch",
+    "express"
+  ],
+  "devDependencies": {},
+  "author": ""
 }
