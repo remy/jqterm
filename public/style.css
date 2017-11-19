@@ -1,5 +1,5 @@
 * {
-  font-family: "Operator Mono", Courier New, Courier, monospace;
+  font-family: 'Operator Mono', Courier New, Courier, monospace;
   font-size: 14px;
   box-sizing: border-box;
 }
@@ -17,9 +17,9 @@ main {
   grid-template-rows: 1fr 45fr 45fr;
   grid-gap: 3px;
   background: #eee;
-}  
+}
 
-main>div {
+main > div {
   width: auto;
   border: 0;
   display: block;
@@ -59,7 +59,7 @@ textarea:focus {
   font-size: 70%;
   padding: 5px 10px 7px 8px;
   color: #666;
-  background: black;
+  /* background: black; */
   border-bottom-left-radius: 2px;
 }
 
@@ -75,7 +75,7 @@ textarea:focus {
   main {
     grid-template-rows: 1fr 90fr;
     grid-template-columns: 10fr 10fr;
-  }  
+  }
 
   #source {
     grid-column: 1;
