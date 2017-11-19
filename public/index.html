@@ -7,9 +7,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.28.0/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.28.0/mode/javascript/javascript.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.28.0/codemirror.css">
-  <link rel="stylesheet" href="/static/style.css">
-  <link rel="stylesheet" href="/static/theme.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/theme.css">
 </head>
 
 <body class="theme-dark">
@@ -17,14 +16,14 @@
     <div id="input">
       <textarea placeholder="> jq query">.</textarea>
     </div>
-    <div id="source">
+    <div id="source" class="editor">
       <textarea class="cm-target" placeholder="your source json">
 { "tip": "see /example for a demo" }</textarea>
     </div>
-    <div id="result">
+    <div id="result" class="editor">
       <textarea class="cm-target" readonly></textarea>
     </div>
   </main>
-  <script src="/static/client.js"></script>
+  <script src="/client.js"></script>
 </body>
 </html>

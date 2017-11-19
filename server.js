@@ -24,11 +24,9 @@ app.get('/:id.json', (req, res) => {
   });
 });
 
-app.get(['/:id', '/'], (req, res) => {
-  res.sendFile(__dirname + '/public/index.html');
-});
-
-app.use('/static', express.static('public'));
+// app.get('/:id', (req, res) => {
+//   res.sendFile(__dirname + '/public/index.html');
+// });
 
 // could also use the POST body instead of query string: http://expressjs.com/en/api.html#req.body
 app.post(['/', '/:id'], (req, res) => {
@@ -41,14 +39,16 @@ app.post(['/', '/:id'], (req, res) => {
 
 app.put('/:id', (req, res) => {
   const path = `${getFilename(req.params.id)}.json`;
-  const query = req.query.query;
+  const query = req.body.toString();
   jq
     .run(query, path, {})
     .then(result => res.json(result))
     .catch(e => res.status(500).json({ error: e.message }));
 });
 
+app.use('/', express.static('public'));
+
 // listen for requests :)
-var listener = app.listen(process.env.PORT || 3000, () => {
+const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port);
 });

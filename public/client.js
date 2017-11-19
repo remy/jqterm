@@ -1,24 +1,55 @@
-/* global CodeMirror, $ */
-let source = null;
-let result = null;
-let dirty = false;
+/* global CodeMirror */
+const $ = s => document.querySelector(s);
+const API = 'https://jace.glitch.me';
 
-$('.cm-target').each(function(i) {
-  const res = CodeMirror.fromTextArea(this, {
-    lineNumbers: true,
-    mode: 'application/ld+json',
-    readOnly: i === 1,
-  });
-  if (this.parentNode.id === 'source') source = res;
-  else result = res;
+let dirty = false;
+let id = null;
+
+function getHash() {
+  const query = encodeURIComponent(input.getValue());
+  return `/#!/${id}?query=${query}`;
+}
+
+function readHash() {
+  const url = new URL(
+    window.location.origin + window.location.hash.split('#!')[1]
+  );
+  const query = url.searchParams.get('query');
+  id = url.pathname.substr(1);
+  input.setValue(query);
+}
+
+$('body').addEventListener('keydown', e => {
+  if (id && e.keyCode === 83 && (e.metaKey || e.ctrlKey)) {
+    // save
+    const blob = new Blob([result.getValue() || ''], {
+      type: 'application/json',
+    });
+    const anchor = document.createElement('a');
+    anchor.download = `${id}.json`;
+    anchor.href = URL.createObjectURL(blob);
+    anchor.click();
+    e.preventDefault();
+  }
 });
 
-const query = CodeMirror.fromTextArea($('#input textarea')[0], {
+const source = CodeMirror.fromTextArea($('#source textarea'), {
+  lineNumbers: true,
+  mode: 'application/ld+json',
+});
+
+const result = CodeMirror.fromTextArea($('#result textarea'), {
+  lineNumbers: true,
+  mode: 'application/ld+json',
+  readOnly: true,
+});
+
+const input = CodeMirror.fromTextArea($('#input textarea'), {
   mode: 'text',
   autofocus: true,
 });
 
-query.on('change', cm => {
+input.on('change', cm => {
   exec(cm.getValue());
 });
 
@@ -28,23 +59,24 @@ source.on('change', cm => {
 });
 
 async function updateData(body) {
-  const res = await fetch(window.location.pathname, {
+  const res = await fetch(`${API}/${id || ''}`, {
     method: 'post',
     body,
   });
   const json = await res.json();
   if (json.id) {
-    window.history.replaceState(null, json.id, `/${json.id}`);
+    id = json.id;
+    window.history.replaceState(null, id, getHash());
   }
   dirty = false;
 }
 
-async function exec(query) {
+async function exec(body) {
   if (dirty) await updateData(source.getValue());
-  const params = new URLSearchParams();
-  params.append('query', query);
-  const res = await fetch(`${window.location.pathname}?${params.toString()}`, {
+  window.history.replaceState(null, id, getHash());
+  const res = await fetch(`${API}/${id}`, {
     method: 'put',
+    body,
   });
   if (res.status !== 200) {
     const json = await res.json();
@@ -55,11 +87,12 @@ async function exec(query) {
   result.setValue(json);
 }
 
-if (window.location.pathname !== '/') {
-  fetch(`${window.location.pathname}.json`)
+if (window.location.hash.indexOf('#!/') === 0) {
+  readHash();
+  fetch(`${API}/${id}.json`)
     .then(res => res.text())
     .then(res => {
       source.setValue(res);
-      exec(query.getValue());
+      exec(input.getValue());
     });
 }
