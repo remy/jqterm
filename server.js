@@ -19,14 +19,16 @@ function getFilename(id) {
 
 app.get('/:id.json', (req, res) => {
   const path = `${getFilename(req.params.id)}.json`;
-  res.sendFile(path, {
-    headers: { 'content-type': 'application/json' },
+  fs.stat(path, (error, stat) => {
+    if (error) {
+      return res.json({ error: `no such record: "${req.params.id}"` });
+    }
+
+    res.sendFile(path, {
+      headers: { 'content-type': 'application/json' },
+    });
   });
 });
-
-// app.get('/:id', (req, res) => {
-//   res.sendFile(__dirname + '/public/index.html');
-// });
 
 // could also use the POST body instead of query string: http://expressjs.com/en/api.html#req.body
 app.post(['/', '/:id'], (req, res) => {
@@ -43,7 +45,12 @@ app.put('/:id', (req, res) => {
   jq
     .run(query, path, {})
     .then(result => res.json(result))
-    .catch(e => res.status(500).json({ error: e.message }));
+    .catch(e => {
+      if (e.message.includes('Could not open file')) {
+        return res.status(404).json({ error: e.message });
+      }
+      res.status(500).json({ error: e.message });
+    });
 });
 
 app.use('/', express.static('public'));
