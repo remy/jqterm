@@ -19,7 +19,7 @@ function getFilename(id) {
 
 app.get('/:id.json', (req, res) => {
   const path = `${getFilename(req.params.id)}.json`;
-  fs.stat(path, (error, stat) => {
+  fs.stat(path, error => {
     if (error) {
       return res.json({ error: `no such record: "${req.params.id}"` });
     }

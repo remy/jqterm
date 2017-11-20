@@ -80,6 +80,12 @@ async function exec(body) {
   });
   if (res.status !== 200) {
     const json = await res.json();
+
+    if (res.status === 404) {
+      dirty = true;
+      result.setValue('Record not found: resubmitting');
+      return exec(body);
+    }
     result.setValue(json.error);
     return;
   }
