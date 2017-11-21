@@ -33,12 +33,7 @@ textarea:focus {
 }
 
 #input {
-  /* width: 100%; */
-  /* min-width: 100%; */
-  /* max-width: 100%; */
-  /* min-height: 30px; */
   line-height: 18px;
-  /*   grid-column: 1 / -1; */
   flex: none;
   height: auto;
   border-bottom: 3px solid black;
@@ -49,21 +44,22 @@ textarea:focus {
   height: 100%;
   width: 100%;
   display: flex;
-  flex-direction: row;
+  flex-direction: column-reverse;
 }
 
 
 main .editors > div {
-  width: 50%;
+  width: 100%;
   border: 0;
   display: block;
   position: relative;
   outline: none;
+  height: 50%;
   background: #f7f7f7;
 }
 
 #result {
-  border-left: 3px solid black;
+  border-bottom: 3px solid black;
 }
 
 
@@ -89,18 +85,16 @@ main .editors > div {
 }
 
 @media (min-width: 720px) {
-  main {
-    grid-template-rows: 1fr 90fr;
-    grid-template-columns: 10fr 10fr;
+  .editors {
+    flex-direction: row;
   }
 
-  #source {
-    grid-column: 1;
-    grid-row: 2;
+  main .editors > div {
+    width: 50%;
+    height: 100%;
   }
 
   #result {
-    grid-column: 2;
-    grid-row: 2;
+    border-left: 3px solid black;
   }
 }
