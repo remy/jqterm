@@ -36,11 +36,13 @@ $('body').addEventListener('keydown', e => {
 const source = CodeMirror.fromTextArea($('#source textarea'), {
   lineNumbers: true,
   mode: 'application/ld+json',
+  scrollPastEnd: true,
 });
 
 const result = CodeMirror.fromTextArea($('#result textarea'), {
   lineNumbers: true,
   mode: 'application/ld+json',
+  scrollPastEnd: true,
   readOnly: true,
 });
 
