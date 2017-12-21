@@ -14,7 +14,7 @@ function readHash() {
   const url = new URL(
     window.location.origin + window.location.hash.split('#!')[1]
   );
-  const query = url.searchParams.get('query');
+  const query = url.searchParams.get('query') || '.';
   id = url.pathname.substr(1);
   input.setValue(query);
 }
