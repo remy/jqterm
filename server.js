@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const uuid = require('uuid');
 const app = express();
+const request = require('request');
 const jq = require('node-jq');
 const fs = require('fs');
 const cors = require('cors');
@@ -18,10 +19,28 @@ function getFilename(id) {
 }
 
 app.get('/:id.json', (req, res) => {
-  const path = `${getFilename(req.params.id)}.json`;
+  const id = req.params.id;
+  const path = `${getFilename(id)}.json`;
   fs.stat(path, error => {
+    console.log(`https://api.github.com/gists/${id}`);
     if (error) {
-      return res.json({ error: `no such record: "${req.params.id}"` });
+      // try from gist
+      request(
+        `https://api.github.com/gists/${id}`,
+        {
+          json: true,
+          headers: { 'user-agent': 'x-jace' },
+        },
+        (error, response, body) => {
+          console.log(error, response.statusCode, body);
+          if (error || response.statusCode !== 200) {
+            return res.json({ error: `no such record: "${req.params.id}"` });
+          }
+
+          res.json(body);
+        }
+      );
+      return;
     }
 
     res.sendFile(path, {

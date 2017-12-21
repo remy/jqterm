@@ -104,3 +104,5 @@ if (window.location.hash.indexOf('#!/') === 0) {
       exec(input.getValue());
     });
 }
+
+const widget = source.addLineWidget(source.lastLine(), $('#config'));
