@@ -10,6 +10,7 @@ const tmpdir = require('os').tmpdir();
 
 app.use(cors());
 app.use(bodyParser.raw({ type: '*/*', limit: '50mb' }));
+app.set('json spaces', 2);
 
 function getFilename(id) {
   if (id === 'example') {
