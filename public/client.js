@@ -6,7 +6,7 @@ let dirty = false;
 let id = null;
 
 function getHash() {
-  const query = encodeURIComponent(input.getValue());
+  const query = escape(input.getValue());
   return `/#!/${id}?query=${query}`;
 }
 
