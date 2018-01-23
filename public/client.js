@@ -1,7 +1,7 @@
 /* global CodeMirror */
 const $ = s => document.querySelector(s);
-// const API = 'https://jace.glitch.me';
-const API = 'http://localhost:3009';
+const API = 'https://jace.glitch.me';
+// const API = 'http://localhost:3009';
 
 let id = '';
 
