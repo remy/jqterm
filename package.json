@@ -1,11 +1,11 @@
 {
   "name": "jace",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A jq service",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "build": "VERSION=$npm_package_version webpack",
+    "build": "VERSION=$npm_package_version node ./build.js",
     "deploy": "cd public; now --local-config=../now.json && now alias --local-config=../now.json"
   },
   "dependencies": {
@@ -30,12 +30,6 @@
     "glitch",
     "express"
   ],
-  "devDependencies": {
-    "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
-    "babel-preset-env": "^1.6.1",
-    "babel-preset-stage-0": "^6.24.1",
-    "webpack": "^3.10.0"
-  },
+  "devDependencies": {},
   "author": ""
 }

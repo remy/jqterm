@@ -5,18 +5,19 @@ const { stringified: env } = require('@remy/envy')();
 module.exports = {
   entry: './public/client.js',
   module: {
-    // rules: [
-    //   {
-    //     test: /\.js$/,
-    //     exclude: /(node_modules|bower_components)/,
-    //     use: {
-    //       loader: 'babel-loader',
-    //       options: {
-    //         presets: ['env', 'stage-0'],
-    //       },
-    //     },
-    //   },
-    // ],
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['env', 'stage-0'],
+            plugins: ['transform-runtime'],
+          },
+        },
+      },
+    ],
   },
   output: {
     filename: 'client.js',
