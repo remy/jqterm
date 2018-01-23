@@ -1,7 +1,10 @@
 /* global CodeMirror */
 const $ = s => document.querySelector(s);
-const API = 'https://jace.glitch.me';
-// const API = 'http://localhost:3009';
+if (!this.process) {
+  this.process = { env: { VERSION: 'local', API: 'http://localhost:3009' } };
+}
+const API = process.env.API;
+const VERSION = process.env.VERSION;
 
 let id = '';
 
@@ -283,6 +286,8 @@ if (window.location.hash.indexOf('#!/') === 0) {
       source.setValue(JSON.stringify(json.payload, '', 2));
       exec(input.getValue());
     });
+} else {
+  source.setValue(JSON.stringify({ version: VERSION }, '', 2));
 }
 
 input.setCursor({ line: 0, ch: input.getValue().length });
