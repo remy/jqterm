@@ -198,6 +198,7 @@ const source = CodeMirror.fromTextArea($('#source textarea'), {
   lineNumbers: true,
   mode: 'application/ld+json',
   scrollPastEnd: true,
+  autoCloseBrackets: true,
 });
 
 const result = CodeMirror.fromTextArea($('#result textarea'), {
@@ -209,6 +210,7 @@ const result = CodeMirror.fromTextArea($('#result textarea'), {
 
 const input = CodeMirror.fromTextArea($('#input textarea'), {
   mode: 'text',
+  autoCloseBrackets: true,
   autocomplete: true,
   keywords,
   autofocus: true,

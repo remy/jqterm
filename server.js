@@ -69,7 +69,8 @@ const syncToFile = (req, res) => (error, response, body) => {
   }
 
   const id = body.id;
-  const payload = body.files['jace.json'].content;
+  const filename = Object.keys(body.files).find(_ => _.endsWith('.json'));
+  const payload = body.files[filename].content;
 
   fs.writeFile(`${tmpdir}/${id}.json`, payload, 'utf8', error => {
     if (error) console.log(error);
@@ -77,7 +78,7 @@ const syncToFile = (req, res) => (error, response, body) => {
 
   cache.set(id, body.description);
 
-  res.json({ id, payload });
+  res.json({ id, payload: JSON.parse(payload) });
 };
 
 const makeGistBody = req => ({
@@ -130,7 +131,7 @@ app.put('/:id', (req, res) => {
   const { id } = req.params;
   const path = `${getFilename(id)}.json`;
   const query = req.body.toString();
-  console.log('QUERY: %s [%s] > %s', id, path, query);
+  //console.log('QUERY: %s [%s] > %s', id, path, query);
   jq
     .run(query, path, {})
     .then(result => res.json(result))
