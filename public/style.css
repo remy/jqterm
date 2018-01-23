@@ -47,6 +47,9 @@ textarea:focus {
   flex-direction: column-reverse;
 }
 
+.widget-autocomplete {
+  opacity: 0.5;
+}
 
 main .editors > div {
   width: 100%;

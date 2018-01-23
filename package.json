@@ -8,9 +8,13 @@
     "deploy": "cd public; now --local-config=../now.json && now alias --local-config=../now.json"
   },
   "dependencies": {
+    "@remy/envy": "^3.0.0",
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
     "express": "^4.16.2",
+    "gists": "^1.0.0",
+    "lru-cache": "^4.1.1",
+    "method-override": "^2.3.10",
     "node-jq": "^0.7.0",
     "request": "^2.83.0",
     "uuid": "^3.1.0"

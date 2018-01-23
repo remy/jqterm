@@ -1,12 +1,34 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const uuid = require('uuid');
 const app = express();
-const request = require('request');
 const jq = require('node-jq');
 const fs = require('fs');
 const cors = require('cors');
 const tmpdir = require('os').tmpdir();
+const methodOverride = require('method-override');
+const LRU = require('lru-cache');
+const options = {
+  max: 500,
+  maxAge: 1000 * 60 * 60,
+};
+const cache = LRU(options);
+
+require('@remy/envy');
+
+const request = require('request').defaults({
+  baseUrl: 'https://api.github.com/gists',
+  json: true,
+  headers: {
+    'user-agent': 'x-jace',
+  },
+  auth: {
+    user: process.env.USER,
+    pass: process.env.TOKEN,
+  },
+});
+
+// override with POST having ?_method=DELETE to attempt to avoid OPTIONS
+app.use(methodOverride('_method'));
 
 app.use(cors());
 app.use(bodyParser.raw({ type: '*/*', limit: '50mb' }));
@@ -20,48 +42,95 @@ function getFilename(id) {
 }
 
 app.get('/:id.json', (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
   const path = `${getFilename(id)}.json`;
-  fs.stat(path, error => {
-    console.log(`https://api.github.com/gists/${id}`);
+  fs.readFile(path, 'utf8', (error, payload) => {
     if (error) {
       // try from gist
-      request(
-        `https://api.github.com/gists/${id}`,
-        {
-          json: true,
-          headers: { 'user-agent': 'x-jace' },
-        },
-        (error, response, body) => {
-          console.log(error, response.statusCode, body);
-          if (error || response.statusCode !== 200) {
-            return res.json({ error: `no such record: "${req.params.id}"` });
-          }
-
-          res.json(body);
-        }
-      );
+      request(`/${id}`, syncToFile(req, res));
       return;
     }
 
-    res.sendFile(path, {
-      headers: { 'content-type': 'application/json' },
+    res.json({
+      id,
+      payload: JSON.parse(payload),
     });
   });
 });
 
-// could also use the POST body instead of query string: http://expressjs.com/en/api.html#req.body
-app.post(['/', '/:id'], (req, res) => {
-  const id = req.params.id || uuid.v4();
-  fs.writeFile(`${tmpdir}/${id}.json`, req.body, 'utf8', error => {
+const syncToFile = (req, res) => (error, response, body) => {
+  if (error || response.statusCode > 201) {
+    console.log('fail', error, response.status);
+    return res.json({
+      error: `could not create back end data`,
+      source: error,
+      statusCode: response.statusCode,
+    });
+  }
+
+  const id = body.id;
+  const payload = body.files['jace.json'].content;
+
+  fs.writeFile(`${tmpdir}/${id}.json`, payload, 'utf8', error => {
     if (error) console.log(error);
   });
-  res.json({ id });
+
+  cache.set(id, body.description);
+
+  res.json({ id, payload });
+};
+
+const makeGistBody = req => ({
+  description: req.query.guid,
+  public: false,
+  files: {
+    'jace.json': {
+      content: req.body.toString(),
+    },
+  },
 });
 
+app.post('/', (req, res) => {
+  request(
+    '', // create gist needs to be on /gists - not gists/
+    {
+      method: 'post',
+      body: makeGistBody(req),
+    },
+    syncToFile(req, res)
+  );
+});
+
+// POST = update gist, or create if no ownership
+app.post('/:id', (req, res) => {
+  const { id } = req.params;
+
+  let url = `/${id}`;
+  let method = 'patch';
+  const owner = cache.get(id);
+
+  if (owner !== req.query.guid) {
+    // create a new gist, don't patch
+    url = '';
+    method = 'post';
+  }
+
+  request(
+    url,
+    {
+      method,
+      body: makeGistBody(req),
+    },
+    syncToFile(req, res)
+  );
+});
+
+// PUT is running the jq query
 app.put('/:id', (req, res) => {
-  const path = `${getFilename(req.params.id)}.json`;
+  const { id } = req.params;
+  const path = `${getFilename(id)}.json`;
   const query = req.body.toString();
+  console.log('QUERY: %s [%s] > %s', id, path, query);
   jq
     .run(query, path, {})
     .then(result => res.json(result))
