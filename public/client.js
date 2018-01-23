@@ -123,6 +123,17 @@ const keywords = [
   'modulemeta',
 ];
 
+function getKeys(object) {
+  return Object.keys(object).reduce((acc, curr) => {
+    acc.push(curr);
+    if (typeof object[curr] === 'object') {
+      acc = acc.concat(getKeys(object[curr]));
+    }
+
+    return acc;
+  }, []);
+}
+
 const guid = (() => {
   function generate() {
     const s4 = () =>
@@ -211,8 +222,11 @@ input.on(
 source.on(
   'change',
   debounce(async (cm, event) => {
-    input.addKeywordsFromString(cm.getValue());
-    console.log(event.origin);
+    try {
+      const value = getKeys(JSON.parse(cm.getValue()));
+      input.addKeywordsFromString(value.join(' '));
+    } catch (e) {}
+
     if (event.origin !== 'setValue') {
       await updateData(cm.getValue());
     }
