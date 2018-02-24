@@ -1,7 +1,90 @@
 @charset "UTF-8";
-.theme-dark main {
-  background: black;
+.theme-light.CodeMirror pre,
+.theme-light .CodeMirror-gutter-wrapper pre {
+  color: #262626;
 }
+.theme-light .CodeMirror-gutter-wrapper {
+  background: #ffffff;
+}
+.theme-light .CodeMirror-cursor {
+  border-left-color: #000000;
+}
+.theme-light .cm-keyword {
+  color: #950095;
+}
+.theme-light .cm-atom {
+  color: #865600;
+}
+.theme-light .box-html .cm-atom {
+  color: #865600;
+}
+.theme-light .cm-def {
+  color: #2f5af3;
+}
+.theme-light .cm-variable {
+  color: #b4713c;
+}
+.theme-light .cm-variable-2 {
+  color: #de3e35;
+}
+.theme-light .cm-variable-3 {
+  color: #b4713c;
+}
+.theme-light .cm-header {
+  color: #df3e35;
+}
+.theme-light .cm-number {
+  color: #865600;
+}
+.theme-light .cm-property {
+  color: #262626;
+}
+.theme-light .cm-attribute {
+  color: #2f5af3;
+}
+.theme-light .cm-builtin {
+  color: #2f5af3;
+}
+.theme-light .cm-qualifier {
+  color: #905600;
+}
+.theme-light .cm-operator {
+  color: #006eb0;
+}
+.theme-light .cm-meta {
+  color: #006eb0;
+}
+.theme-light .cm-string {
+  color: #3f9455;
+}
+.theme-light .cm-string-2 {
+  color: #2a2c33;
+}
+.theme-light .cm-tag {
+  color: #df3e35;
+}
+.theme-light .box-css .cm-tag {
+  color: #de3e35;
+}
+.theme-light .cm-tag.cm-bracket {
+  color: #2a2c33;
+}
+.theme-light .CodeMirror-linenumber {
+  color: #cccccc;
+}
+.theme-light .CodeMirror-guttermarker-subtle {
+  color: #cccccc;
+}
+.theme-light .cm-comment {
+  color: #8f8f9c;
+  font-style: italic;
+}
+.theme-light .cm-searching,
+.theme-light .CodeMirror-focused .CodeMirror-selected,
+.theme-light .CodeMirror-selected {
+  background-color: #edf0f0;
+}
+
 .theme-dark .CodeMirror {
   /*
     Name:       one-dark
@@ -56,7 +139,7 @@
   color: #abb2bf;
 }
 .theme-dark .CodeMirror .CodeMirror-foldmarker {
-  line-height: 0.3;
+  line-height: .3;
   cursor: pointer;
   color: #abb2bf;
   background: rgba(204, 217, 255, 0.05);
@@ -70,18 +153,15 @@
   cursor: pointer;
 }
 .theme-dark .CodeMirror .CodeMirror-foldgutter-open:after {
-  content: '\25BE';
+  content: "\25BE";
   color: #393e46;
 }
 .theme-dark .CodeMirror .CodeMirror.over-gutter,
-.theme-dark
-  .CodeMirror
-  .CodeMirror-activeline
-  .CodeMirror-foldgutter-open:after {
+.theme-dark .CodeMirror .CodeMirror-activeline .CodeMirror-foldgutter-open:after {
   color: #5c6370;
 }
 .theme-dark .CodeMirror .CodeMirror-foldgutter-folded:after {
-  content: '\25B8';
+  content: "\25B8";
   color: #5c6370;
 }
 .theme-dark .CodeMirror .CodeMirror-scrollbar-filler,

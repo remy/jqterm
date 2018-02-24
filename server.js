@@ -139,7 +139,9 @@ app.put('/:id', (req, res) => {
       if (e.message.includes('Could not open file')) {
         return res.status(404).json({ error: e.message });
       }
-      res.status(500).json({ error: e.message });
+      res
+        .status(500)
+        .json({ error: e.message.replace(/^.*:\d+\):\s/, '').trim() });
     });
 });
 
