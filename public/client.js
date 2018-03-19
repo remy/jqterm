@@ -1,7 +1,7 @@
 /* global CodeMirror */
 const $ = s => document.querySelector(s);
 if (!this.process) {
-  this.process = { env: { VERSION: 'local', API: 'http://localhost:3009' } };
+  this.process = { env: { VERSION: 'local', API: 'http://localhost:3100' } };
 }
 const API = process.env.API;
 const VERSION = process.env.VERSION;
@@ -215,7 +215,7 @@ function debounce(fn, delay) {
 }
 
 function getHash() {
-  const query = escape(input.getValue());
+  const query = encodeURIComponent(input.getValue());
   return `/#!/${id}?query=${query}`;
 }
 
