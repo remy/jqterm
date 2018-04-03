@@ -51,9 +51,11 @@ app.get('/:id.json', (req, res) => {
       return;
     }
 
+    console.log('payload: %s', payload);
+
     res.json({
       id,
-      payload: JSON.parse(payload),
+      payload: JSON.parse(payload || '{}'),
     });
   });
 });

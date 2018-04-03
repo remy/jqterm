@@ -52,6 +52,11 @@ const keywords = [
   'halt_error',
   'halt',
   'has',
+  'if',
+  'then',
+  'else',
+  'elif',
+  'end',
   'implode',
   'in',
   'index',
@@ -144,7 +149,7 @@ const jqMode = {
     {
       regex: new RegExp(
         `[^_](?:${keywords
-          .concat('def', 'if', 'elif', 'end', 'then', 'as')
+          .concat('def', 'if', 'elif', 'else', 'end', 'then', 'as')
           .join('|')})\\b`
       ),
       token: 'keyword',
@@ -215,7 +220,10 @@ function debounce(fn, delay) {
 }
 
 function getHash() {
-  const query = encodeURIComponent(input.getValue());
+  const query = encodeURIComponent(input.getValue()).replace(
+    /[()]/g,
+    c => ({ '(': '%28', ')': '%29' }[c])
+  );
   return `/#!/${id}?query=${query}`;
 }
 
@@ -247,6 +255,8 @@ const source = CodeMirror.fromTextArea($('#source textarea'), {
   mode: 'application/ld+json',
   scrollPastEnd: true,
   autoCloseBrackets: true,
+  foldGutter: true,
+  gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
 });
 
 const result = CodeMirror.fromTextArea($('#result textarea'), {
@@ -254,6 +264,8 @@ const result = CodeMirror.fromTextArea($('#result textarea'), {
   mode: 'application/ld+json',
   scrollPastEnd: true,
   readOnly: true,
+  foldGutter: true,
+  gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
 });
 
 CodeMirror.defineSimpleMode('jq', jqMode);
