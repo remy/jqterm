@@ -115,3 +115,14 @@ main .editors > div {
     border-left: 3px solid #ccc;
   }
 }
+
+
+.CodeMirror-foldmarker {
+  display: inline-block;
+  color: #B0BEC5;
+  font-weight: bold;
+  text-shadow: none;
+  font-family: arial;
+  line-height: .3;
+  cursor: pointer;
+}

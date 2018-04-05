@@ -256,6 +256,7 @@ const source = CodeMirror.fromTextArea($('#source textarea'), {
   scrollPastEnd: true,
   autoCloseBrackets: true,
   foldGutter: true,
+  foldOptions: { widget: '\u00AB\u00BB' },
   gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
 });
 
@@ -265,6 +266,7 @@ const result = CodeMirror.fromTextArea($('#result textarea'), {
   scrollPastEnd: true,
   readOnly: true,
   foldGutter: true,
+  foldOptions: { widget: '\u00AB\u00BB' },
   gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
 });
 
