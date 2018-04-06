@@ -6,6 +6,8 @@ if (!this.process) {
 const API = process.env.API;
 const VERSION = process.env.VERSION;
 
+const root = document.documentElement;
+
 let id = '';
 
 /* all jq keywords based on following from docs page
@@ -281,6 +283,35 @@ const input = CodeMirror.fromTextArea($('#input textarea'), {
   lineWrapping: true,
 });
 
+root.addEventListener(
+  'keydown',
+  event => {
+    if (
+      event.shiftKey &&
+      (event.metaKey || event.ctrlKey) &&
+      event.keyCode == 84
+    ) {
+      root.classList.toggle('hidden-source');
+      event.preventDefault();
+    }
+
+    if (
+      event.shiftKey &&
+      (event.metaKey || event.ctrlKey) &&
+      event.keyCode == 191
+    ) {
+      // show help
+      root.classList.add('help');
+      event.preventDefault();
+    }
+
+    if (event.keyCode === 27) {
+      root.classList.remove('help');
+    }
+  },
+  true
+);
+
 input.on(
   'change',
   debounce(cm => {
@@ -288,6 +319,10 @@ input.on(
   }),
   500
 );
+
+source.on('drop', cm => {
+  cm.setValue('');
+});
 
 source.on(
   'change',
@@ -305,6 +340,7 @@ source.on(
 );
 
 const updateData = async body => {
+  root.classList.add('loading');
   const res = await fetch(`${API}/${id || ''}?guid=${guid}`, {
     method: 'post',
     body,
@@ -315,6 +351,7 @@ const updateData = async body => {
     id = json.id;
     window.history.replaceState(null, id, getHash());
   }
+  root.classList.remove('loading');
 };
 
 async function exec(body, reRequest = false) {
@@ -354,7 +391,19 @@ if (window.location.hash.indexOf('#!/') === 0) {
       exec(input.getValue());
     });
 } else {
-  source.setValue(JSON.stringify({ version: VERSION }, '', 2));
+  source.setValue(
+    JSON.stringify(
+      {
+        version: VERSION,
+        help: 'ctrl + shift + ?',
+        source: 'https://github.com/remy/jace',
+        credit: 'Remy Sharp / @rem',
+        tip: ['Drag and drop .json files', 'in this panel to start querying'],
+      },
+      '',
+      2
+    )
+  );
 }
 
 input.setCursor({ line: 0, ch: input.getValue().length });

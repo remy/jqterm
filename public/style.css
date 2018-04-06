@@ -43,6 +43,7 @@ textarea:focus {
   flex: none;
   height: auto;
   border-bottom: 3px solid black;
+  position: relative;
 }
 
 .theme-light #input {
@@ -125,4 +126,102 @@ main .editors > div {
   font-family: arial;
   line-height: .3;
   cursor: pointer;
+}
+
+.help #help {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 100%;
+}
+
+.help main {
+  filter: blur(2px);
+}
+
+#help {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+#help > * {
+  background: white;
+  width: 80%;
+  margin: 0 auto;
+  font-size: 200%;
+  padding: 20px;
+  border: 3px solid #ccc;
+  border-radius: 3px;
+}
+
+#help * {
+  font-size: 1.6rem;
+}
+
+#help ul {
+  list-style: none;
+  padding: 0;
+}
+
+#help li {
+  margin: 20px 0;
+  padding: 10px 20px;
+}
+
+.hidden-source .editors #source {
+  display: none;
+}
+
+.hidden-source .editors #result {
+  width: 100%;
+  border: 0;
+}
+
+.loading #input:before {
+  content: 'creating';
+  position: fixed;
+  z-index: 100;
+  color: #03A9F4;
+  font-size: 80%;
+  top: 11px;
+  right: 35px;
+  opacity: 0.6;
+}
+
+.loading #input:after {
+  content: '';
+  width: 20px;
+  height: 20px;
+  margin: 100px auto;
+  background-color: #03A9F4;
+  border-radius: 100%;
+  -webkit-animation: sk-scaleout 1.0s infinite ease-in-out;
+  animation: sk-scaleout 1.0s infinite ease-in-out;
+  position: fixed;
+  top: -90px;
+  right: 10px;
+  z-index: 100;
+}
+
+@-webkit-keyframes sk-scaleout {
+  0% { -webkit-transform: scale(0) }
+  100% {
+    -webkit-transform: scale(1.0);
+    opacity: 0;
+  }
+}
+
+@keyframes sk-scaleout {
+  0% {
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  } 100% {
+    -webkit-transform: scale(1.0);
+    transform: scale(1.0);
+    opacity: 0;
+  }
 }
