@@ -76,6 +76,10 @@ main .editors > div {
   border-bottom: 3px solid black;
 }
 
+.theme-light #result {
+  border-color: #ccc;
+}
+
 .editor:before {
   position: absolute;
   z-index: 10;
@@ -178,6 +182,7 @@ main .editors > div {
 
 .hidden-source .editors #result {
   width: 100%;
+  height: 100%;
   border: 0;
 }
 
@@ -225,3 +230,4 @@ main .editors > div {
     opacity: 0;
   }
 }
+
