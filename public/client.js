@@ -8,6 +8,13 @@ const VERSION = process.env.VERSION;
 
 const root = document.documentElement;
 
+var importObject = { imports: { imported_func: arg => console.log(arg) } };
+
+const config = {
+  raw: false,
+  slurp: false,
+};
+
 let id = '';
 
 /* all jq keywords based on following from docs page
@@ -226,16 +233,36 @@ function getHash() {
     /[()]/g,
     c => ({ '(': '%28', ')': '%29' }[c])
   );
-  return `/#!/${id}?query=${query}`;
+
+  let url = `/${id}?query=${query}`;
+
+  if (config.slurp) {
+    url += '&slurp=true';
+  }
+
+  if (config.raw) {
+    url += '&raw=true';
+  }
+
+  return url;
 }
 
 function readHash() {
-  const url = new URL(
-    window.location.origin + window.location.hash.split('#!')[1]
-  );
+  const url = new URL(window.location);
   const query = url.searchParams.get('query') || '.';
   id = url.pathname.substr(1);
   input.setValue(query);
+
+  if (url.searchParams.get('raw') === 'true') {
+    config.raw = true;
+    $('#raw').checked = true;
+    result.setOption('mode', config.raw ? 'text/plain' : 'application/ld+json');
+  }
+
+  if (url.searchParams.get('slurp') === 'true') {
+    config.slurp = true;
+    $('#slurp').checked = true;
+  }
 }
 
 $('body').addEventListener('keydown', e => {
@@ -320,6 +347,16 @@ input.on(
   500
 );
 
+$('#slurp').onchange = function() {
+  config.slurp = !!this.checked;
+  exec(input.getValue());
+};
+$('#raw').onchange = function() {
+  config.raw = !!this.checked;
+  result.setOption('mode', config.raw ? 'text/plain' : 'application/ld+json');
+  exec(input.getValue());
+};
+
 source.on('drop', cm => {
   cm.setValue('');
 });
@@ -357,10 +394,16 @@ const updateData = async body => {
 async function exec(body, reRequest = false) {
   if (!id) return;
   window.history.replaceState(null, id, getHash());
-  const res = await fetch(`${API}/${id}?guid=${guid}&_method=PUT`, {
-    method: 'post',
-    body,
-  });
+
+  const res = await fetch(
+    `${API}/${id}?guid=${guid}&slurp=${config.slurp}&raw=${
+      config.raw
+    }&_method=PUT`,
+    {
+      method: 'post',
+      body,
+    }
+  );
   if (res.status !== 200) {
     const json = await res.json();
 
@@ -375,10 +418,22 @@ async function exec(body, reRequest = false) {
     return;
   }
   const json = await res.json();
-  result.setValue(json);
+  let output = json;
+  if (config.raw) {
+    try {
+      output = json
+        .split('\n')
+        .map(_ => new Function(`return ${_}`)())
+        .join('\n');
+    } catch (error) {
+      output = json;
+    }
+  }
+
+  result.setValue(output);
 }
 
-if (window.location.hash.indexOf('#!/') === 0) {
+if (window.location.pathname !== '/') {
   readHash();
   fetch(`${API}/${id}.json`)
     .then(res => res.json())
@@ -387,7 +442,8 @@ if (window.location.hash.indexOf('#!/') === 0) {
         id = json.id;
         window.history.replaceState(null, id, getHash());
       }
-      source.setValue(JSON.stringify(json.payload, '', 2));
+      // source.setValue(JSON.stringify(json.payload, '', 2));
+      source.setValue(json.payload);
       exec(input.getValue());
     });
 } else {

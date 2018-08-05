@@ -59,7 +59,7 @@ app.get('/:id.json', (req, res, next) => {
     try {
       res.json({
         id,
-        payload: JSON.parse(payload || '{}'),
+        payload: payload || {},
       });
     } catch (e) {
       next(e);
@@ -94,15 +94,17 @@ const syncToFile = (req, res) => ({ body, statusCode }) => {
 
   cache.set(id, body.description);
 
-  try {
-    payload = JSON.parse(payload);
-    res.json({ id, payload: JSON.parse(payload) });
-  } catch (e) {
-    console.log('fail: bad payload');
-    const e = new Error('could not parse source JSON');
-    e.code = 500;
-    throw e;
-  }
+  res.json({ id, payload });
+
+  // try {
+  //   payload = JSON.parse(payload);
+  //   res.json({ id, payload });
+  // } catch (error) {
+  //   console.log('fail: bad payload', error, payload);
+  //   const e = new Error('could not parse source JSON');
+  //   e.code = 500;
+  //   throw e;
+  // }
 };
 
 const makeGistBody = req => ({
@@ -152,9 +154,12 @@ app.put('/:id', (req, res) => {
   const { id } = req.params;
   const path = `${getFilename(id)}.json`;
   const query = req.body.toString();
-  //console.log('QUERY: %s [%s] > %s', id, path, query);
+  // console.log('QUERY: %s [%s] > %s', id, path, JSON.stringify(req.query));
   jq
-    .run(query, path, {})
+    .run(query, path, {
+      slurp: req.query.slurp === 'true',
+      output: 'pretty',
+    })
     .then(result => res.json(result))
     .catch(e => {
       if (e.message.includes('Could not open file')) {
@@ -167,6 +172,8 @@ app.put('/:id', (req, res) => {
 });
 
 app.use('/', express.static('public'));
+
+app.get('/*', (req, res) => res.sendFile(__dirname + '/public/index.html'));
 
 app.use(require('./error'));
 

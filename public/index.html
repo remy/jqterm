@@ -44,24 +44,22 @@
     </div>
     <div class="editors">
       <div id="source" class="editor">
+        <label>
+          Slurp
+          <input type="checkbox" name="slurp" id="slurp" />
+        </label>
         <textarea class="cm-target" placeholder="your source json"></textarea>
       </div>
       <div id="result" class="editor">
+        <label>
+          Raw
+          <input type="checkbox" name="raw" id="raw" />
+        </label>
+
         <textarea class="cm-target" readonly></textarea>
       </div>
     </div>
   </main>
-  <div hidden id="config">
-    <div>
-      <label>
-        <input type="checkbox"> Raw</label>
-    </div>
-    <div>
-      <label>Slurp
-        <input type="url">
-      </label>
-    </div>
-  </div>
   <script src="/client.js"></script>
   <div id="help">
     <div>

@@ -28,11 +28,7 @@
   },
   "repository": {},
   "license": "MIT",
-  "keywords": [
-    "node",
-    "glitch",
-    "express"
-  ],
+  "keywords": ["node", "glitch", "express"],
   "devDependencies": {},
   "author": "Remy Sharp"
 }

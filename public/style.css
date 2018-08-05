@@ -17,6 +17,10 @@ main {
   flex-direction: column;
 }
 
+label {
+  user-select: none !important;
+}
+
 .CodeMirror {
   /* padding: 5px 0; */
   display: block;
@@ -231,3 +235,22 @@ main .editors > div {
   }
 }
 
+.editor label {
+  position: absolute;
+  top: 20px;
+  right: 10px;
+  z-index: 10;
+  color: rgb(102, 102, 102);
+  font-size: 70%;
+  text-transform: lowercase;
+  letter-spacing: normal;
+  margin-top: 5px;
+  cursor: pointer;
+  background: white;
+  opacity: 0.9;
+}
+
+label input[type="checkbox"] {
+  margin: 0;
+  vertical-align: text-top;
+}
