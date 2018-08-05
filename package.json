@@ -1,6 +1,6 @@
 {
   "name": "jqterm",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "A jq service",
   "main": "server.js",
   "scripts": {
@@ -17,8 +17,8 @@
     "http-status-codes": "^1.3.0",
     "lru-cache": "^4.1.1",
     "method-override": "^2.3.10",
-    "node-jq": "^1.2.0",
-    "request": "^2.83.0",
+    "node-jq": "^1.3.1",
+    "request": "^2.87.0",
     "request-promise-native": "^1.0.5",
     "undefsafe": "^2.0.2",
     "uuid": "^3.1.0"

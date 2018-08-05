@@ -433,6 +433,10 @@ async function exec(body, reRequest = false) {
   result.setValue(output);
 }
 
+if (window.location.hash.indexOf('#!/') === 0) {
+  window.history.replaceState(null, id, window.location.hash.slice(2));
+}
+
 if (window.location.pathname !== '/') {
   readHash();
   fetch(`${API}/${id}.json`)
