@@ -77,7 +77,15 @@ const syncToFile = (req, res) => ({ body, statusCode }) => {
 
   const id = body.id;
   const filename = Object.keys(body.files).find(_ => _.endsWith('.json'));
-  const payload = body.files[filename].content;
+
+  if (!body.files[filename]) {
+    console.log('fail', body.files);
+    const e = new Error('could not create back end data');
+    e.code = 500;
+    throw e;
+  }
+
+  let payload = body.files[filename].content;
 
   // async and ignore
   fs.writeFile(`${tmpdir}/${id}.json`, payload, 'utf8', error => {
@@ -86,7 +94,15 @@ const syncToFile = (req, res) => ({ body, statusCode }) => {
 
   cache.set(id, body.description);
 
-  res.json({ id, payload: JSON.parse(payload) });
+  try {
+    payload = JSON.parse(payload);
+    res.json({ id, payload: JSON.parse(payload) });
+  } catch (e) {
+    console.log('fail: bad payload');
+    const e = new Error('could not parse source JSON');
+    e.code = 500;
+    throw e;
+  }
 };
 
 const makeGistBody = req => ({
