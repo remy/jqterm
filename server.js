@@ -33,7 +33,7 @@ const request = require('request-promise-native').defaults({
 // override with POST having ?_method=DELETE to attempt to avoid OPTIONS
 app.use(methodOverride('_method'));
 app.use(cors());
-app.use(bodyParser.raw({ type: '*/*', limit: '50mb' }));
+app.use(bodyParser.text({ type: '*/*', limit: '50mb' }));
 app.set('json spaces', 2);
 
 function getFilename(id) {
@@ -79,7 +79,7 @@ const syncToFile = (req, res) => ({ body, statusCode }) => {
   const filename = Object.keys(body.files).find(_ => _.endsWith('.json'));
 
   if (!body.files[filename]) {
-    console.log('fail', body.files);
+    console.log('fail - no files found', body.files);
     const e = new Error('could not create back end data');
     e.code = 500;
     throw e;
@@ -150,24 +150,42 @@ app.post('/:id', (req, res, next) => {
 });
 
 // PUT is running the jq query
-app.put('/:id', (req, res) => {
+app.put('/:id', async (req, res) => {
   const { id } = req.params;
   const path = `${getFilename(id)}.json`;
   const query = req.body.toString();
-  // console.log('QUERY: %s [%s] > %s', id, path, JSON.stringify(req.query));
+
+  let input = path;
+
+  const options = {
+    slurp: req.query.slurp === 'true',
+    output: 'pretty',
+  };
+
+  // emulate --raw-input
+  if (req.query['raw-input'] === 'true') {
+    options.input = 'string';
+    input = await readFile(path, 'utf-8');
+
+    if (options.slurp) {
+      // input = input;
+      options.input = 'json';
+    } else {
+      // correct as per command lines
+      input = input.split('\n').map(_ => `"${_}"`);
+    }
+  }
+
   jq
-    .run(query, path, {
-      slurp: req.query.slurp === 'true',
-      output: 'pretty',
-    })
+    .run(query, input, options)
     .then(result => res.json(result))
     .catch(e => {
       if (e.message.includes('Could not open file')) {
         return res.status(404).json({ error: e.message });
       }
-      res
-        .status(500)
-        .json({ error: e.message.replace(/^.*:\d+\):\s/, '').trim() });
+      const error = e.message.replace(/^.*:\d+\):\s/, '').trim();
+      // console.log('jq fail', error);
+      res.status(500).json({ error });
     });
 });
 

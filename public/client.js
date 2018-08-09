@@ -8,10 +8,9 @@ const VERSION = process.env.VERSION;
 
 const root = document.documentElement;
 
-var importObject = { imports: { imported_func: arg => console.log(arg) } };
-
 const config = {
   raw: false,
+  rawInput: false,
   slurp: false,
 };
 
@@ -240,6 +239,10 @@ function getHash() {
     url += '&slurp=true';
   }
 
+  if (config.rawInput) {
+    url += '&raw-input=true';
+  }
+
   if (config.raw) {
     url += '&raw=true';
   }
@@ -262,6 +265,11 @@ function readHash() {
   if (url.searchParams.get('slurp') === 'true') {
     config.slurp = true;
     $('#slurp').checked = true;
+  }
+
+  if (url.searchParams.get('raw-input') === 'true') {
+    config.rawInput = true;
+    $('#raw-input').checked = true;
   }
 }
 
@@ -351,6 +359,12 @@ $('#slurp').onchange = function() {
   config.slurp = !!this.checked;
   exec(input.getValue());
 };
+
+$('#raw-input').onchange = function() {
+  config.rawInput = !!this.checked;
+  exec(input.getValue());
+};
+
 $('#raw').onchange = function() {
   config.raw = !!this.checked;
   result.setOption('mode', config.raw ? 'text/plain' : 'application/ld+json');
@@ -398,10 +412,13 @@ async function exec(body, reRequest = false) {
   const res = await fetch(
     `${API}/${id}?guid=${guid}&slurp=${config.slurp}&raw=${
       config.raw
-    }&_method=PUT`,
+    }&raw-input=${config.rawInput}&_method=PUT`,
     {
       method: 'post',
       body,
+      headers: {
+        'content-type': 'text/plain',
+      },
     }
   );
   if (res.status !== 200) {

@@ -235,19 +235,30 @@ main .editors > div {
   }
 }
 
-.editor label {
+.editor .controls {
   position: absolute;
   top: 20px;
   right: 10px;
   z-index: 10;
+  background: white;
+  opacity: 0.9;
+}
+
+.controls label {
+  cursor: pointer;
+  margin-top: 5px;
+  display: block;
+  text-align: right;
   color: rgb(102, 102, 102);
   font-size: 70%;
   text-transform: lowercase;
   letter-spacing: normal;
-  margin-top: 5px;
+}
+
+.controls button {
+  color: rgb(102, 102, 102);
+  font-size: 90%;
   cursor: pointer;
-  background: white;
-  opacity: 0.9;
 }
 
 label input[type="checkbox"] {

@@ -44,17 +44,25 @@
     </div>
     <div class="editors">
       <div id="source" class="editor">
-        <label>
-          Slurp
-          <input type="checkbox" name="slurp" id="slurp" />
-        </label>
+        <div class="controls">
+          <label title="--slurp">
+            Slurp
+            <input type="checkbox" name="slurp" id="slurp" />
+          </label>
+          <label title="--raw-input">
+            Raw
+            <input type="checkbox" name="raw-input" id="raw-input" />
+          </label>
+        </div>
         <textarea class="cm-target" placeholder="your source json"></textarea>
       </div>
       <div id="result" class="editor">
-        <label>
-          Raw
-          <input type="checkbox" name="raw" id="raw" />
-        </label>
+        <div class="controls">
+          <label title="--raw-output">
+            Raw
+            <input type="checkbox" name="raw" id="raw" />
+          </label>
+        </div>
 
         <textarea class="cm-target" readonly></textarea>
       </div>
@@ -67,7 +75,9 @@
         <li>
           <a target="_new" href="https://stedolan.github.io/jq/manual/">jq manual</a>
         </li>
-        <li>Toggle source: <kbd>ctrl+shift+t</kbd></li>
+        <li>Toggle source:
+          <kbd>ctrl+shift+t</kbd>
+        </li>
         <li>Save result: ctrl+s</li>
         <li>Dismiss help: esc</li>
       </ul>
