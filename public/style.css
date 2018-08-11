@@ -255,6 +255,10 @@ main .editors > div {
   letter-spacing: normal;
 }
 
+.controls input {
+  cursor: pointer;
+}
+
 .controls button {
   color: rgb(102, 102, 102);
   font-size: 90%;
@@ -264,4 +268,12 @@ main .editors > div {
 label input[type="checkbox"] {
   margin: 0;
   vertical-align: text-top;
+}
+
+.CodeMirror {
+  background: #fcfcfc;
+}
+
+.CodeMirror.CodeMirror-focused {
+  background: white;
 }

@@ -1,20 +1,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
-const jq = require('node-jq');
-const fs = require('fs');
-const { promisify } = require('util');
 const cors = require('cors');
-const tmpdir = require('os').tmpdir();
 const methodOverride = require('method-override');
-const LRU = require('lru-cache');
-const VERSION = require('./package.json').version;
-const readFile = promisify(fs.readFile);
-const options = {
-  max: 500,
-  maxAge: 1000 * 60 * 60,
-};
-const cache = LRU(options);
+const {
+  makeGistBody,
+  run,
+  getFilename,
+  cache,
+  VERSION,
+  readFile,
+  writeToFile,
+} = require('./lib/');
 
 require('@remy/envy');
 
@@ -37,25 +34,12 @@ app.use(cors());
 app.use(bodyParser.text({ type: '*/*', limit: '50mb' }));
 app.set('json spaces', 2);
 
-function getFilename(id) {
-  if (id === 'example') {
-    return `${__dirname}/package`;
-  }
-  return `${tmpdir}/${id}`;
-}
-
-app.get('/:id.json', (req, res, next) => {
+app.get('/:id.json', async (req, res, next) => {
   const { id } = req.params;
   const path = `${getFilename(id)}.json`;
 
-  fs.readFile(path, 'utf8', (error, payload) => {
-    if (error) {
-      // try from gist
-      request(`/${id}`)
-        .then(syncToFile(req, res))
-        .catch(next);
-      return;
-    }
+  try {
+    const payload = await readFile(path, 'utf8');
 
     try {
       res.json({
@@ -65,7 +49,13 @@ app.get('/:id.json', (req, res, next) => {
     } catch (e) {
       next(e);
     }
-  });
+  } catch (error) {
+    // try from gist
+    request(`/${id}`)
+      .then(syncToFile(req, res))
+      .catch(next);
+    return;
+  }
 });
 
 const syncToFile = (req, res) => ({ body, statusCode }) => {
@@ -76,53 +66,14 @@ const syncToFile = (req, res) => ({ body, statusCode }) => {
     throw e;
   }
 
-  const id = body.id;
-  const filename = Object.keys(body.files).find(_ => _.endsWith('.json'));
-
-  if (!body.files[filename]) {
-    console.log('fail - no files found', body.files);
-    const e = new Error('could not create back end data');
-    e.code = 500;
-    throw e;
-  }
-
-  let payload = body.files[filename].content;
-
-  // async and ignore
-  fs.writeFile(`${tmpdir}/${id}.json`, payload, 'utf8', error => {
-    if (error) console.log(error);
-  });
-
-  cache.set(id, body.description);
-
-  res.json({ id, payload });
-
-  // try {
-  //   payload = JSON.parse(payload);
-  //   res.json({ id, payload });
-  // } catch (error) {
-  //   console.log('fail: bad payload', error, payload);
-  //   const e = new Error('could not parse source JSON');
-  //   e.code = 500;
-  //   throw e;
-  // }
+  res.json(writeToFile(body));
 };
-
-const makeGistBody = req => ({
-  description: req.query.guid,
-  public: false,
-  files: {
-    'jace.json': {
-      content: req.body.toString(),
-    },
-  },
-});
 
 app.post('/', (req, res, next) => {
   // create gist needs to be on /gists - not gists/
   request('', {
     method: 'post',
-    body: makeGistBody(req),
+    body: makeGistBody({ body: req.body, guid: req.query.guid }),
   })
     .then(syncToFile(req, res))
     .catch(next);
@@ -144,7 +95,7 @@ app.post('/:id', (req, res, next) => {
 
   request(url, {
     method,
-    body: makeGistBody(req),
+    body: makeGistBody({ body: req.body, guid: req.query.guid }),
   })
     .then(syncToFile(req, res))
     .catch(next);
@@ -188,17 +139,9 @@ app.put('/:id?', async (req, res) => {
     options.input = 'json';
   }
 
-  jq
-    .run(query, input, options)
-    .then(result => res.json(result))
-    .catch(e => {
-      if (e.message.includes('Could not open file')) {
-        return res.status(404).json({ error: e.message });
-      }
-      const error = e.message.replace(/^.*:\d+\):\s/, '').trim();
-      // console.log('jq fail', error);
-      res.status(500).json({ error });
-    });
+  run({ query, input, options }).then(({ status, result }) => {
+    res.status(status).json(result);
+  });
 });
 
 app.use('/', express.static('public'));

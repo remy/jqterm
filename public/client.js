@@ -1,8 +1,10 @@
 /* global CodeMirror */
 const $ = s => document.querySelector(s);
+const isApp = typeof process !== 'undefined';
 if (!this.process) {
   this.process = { env: { VERSION: 'local', API: 'http://localhost:3100' } };
 }
+
 const API = process.env.API;
 const VERSION = process.env.VERSION;
 
@@ -106,6 +108,7 @@ const keywords = [
   'paths',
   'range',
   'recurse_down',
+  'reduce',
   'recurse',
   'reverse',
   'rindex',
@@ -273,20 +276,6 @@ function readHash() {
   }
 }
 
-$('body').addEventListener('keydown', e => {
-  if (id && e.keyCode === 83 && (e.metaKey || e.ctrlKey)) {
-    // save
-    const blob = new Blob([result.getValue() || ''], {
-      type: 'application/json',
-    });
-    const anchor = document.createElement('a');
-    anchor.download = `${id}.json`;
-    anchor.href = URL.createObjectURL(blob);
-    anchor.click();
-    e.preventDefault();
-  }
-});
-
 const source = CodeMirror.fromTextArea($('#source textarea'), {
   lineNumbers: true,
   mode: 'application/ld+json',
@@ -321,6 +310,19 @@ const input = CodeMirror.fromTextArea($('#input textarea'), {
 root.addEventListener(
   'keydown',
   event => {
+    if (id && e.keyCode === 83 && (e.metaKey || e.ctrlKey)) {
+      // save
+      const blob = new Blob([result.getValue() || ''], {
+        type: 'application/json',
+      });
+      const anchor = document.createElement('a');
+      anchor.download = `${id}.json`;
+      anchor.href = URL.createObjectURL(blob);
+      anchor.click();
+      e.preventDefault();
+      return;
+    }
+
     if (
       event.shiftKey &&
       (event.metaKey || event.ctrlKey) &&
@@ -400,7 +402,7 @@ const updateData = async body => {
   const json = await res.json();
   if (json.id && id !== json.id) {
     id = json.id;
-    window.history.replaceState(null, id, getHash());
+    window.history.pushState(null, id, getHash());
   }
   root.classList.remove('loading');
 };
@@ -414,7 +416,7 @@ async function exec(body, reRequest = false) {
       config.raw
     }&raw-input=${config.rawInput}&_method=PUT`,
     {
-      method: 'post',
+      method: 'put',
       body,
       headers: {
         'content-type': 'text/plain',
@@ -454,7 +456,7 @@ if (window.location.hash.indexOf('#!/') === 0) {
   window.history.replaceState(null, id, window.location.hash.slice(2));
 }
 
-if (window.location.pathname !== '/') {
+if (!isApp && window.location.pathname !== '/') {
   readHash();
   fetch(`${API}/${id}.json`)
     .then(res => res.json())
@@ -463,23 +465,28 @@ if (window.location.pathname !== '/') {
         id = json.id;
         window.history.replaceState(null, id, getHash());
       }
-      // source.setValue(JSON.stringify(json.payload, '', 2));
-      source.setValue(json.payload);
+      try {
+        source.setValue(JSON.stringify(JSON.parse(json.payload), '', 2));
+      } catch (e) {
+        console.log(e);
+        source.setValue(json.payload);
+      }
       exec(input.getValue());
     });
 } else {
   source.setValue(
-    JSON.stringify(
-      {
-        version: VERSION,
-        help: 'ctrl + shift + ?',
-        source: 'https://github.com/remy/jace',
-        credit: 'Remy Sharp / @rem',
-        tip: ['Drag and drop .json files', 'in this panel to start querying'],
-      },
-      '',
-      2
-    )
+    window.last ||
+      JSON.stringify(
+        {
+          version: VERSION,
+          help: 'ctrl + shift + ?',
+          source: 'https://github.com/remy/jace',
+          credit: 'Remy Sharp / @rem',
+          tip: ['Drag and drop .json files', 'in this panel to start querying'],
+        },
+        '',
+        2
+      )
   );
 }
 
