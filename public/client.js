@@ -310,7 +310,7 @@ const input = CodeMirror.fromTextArea($('#input textarea'), {
 root.addEventListener(
   'keydown',
   event => {
-    if (id && e.keyCode === 83 && (e.metaKey || e.ctrlKey)) {
+    if (id && event.keyCode === 83 && (event.metaKey || event.ctrlKey)) {
       // save
       const blob = new Blob([result.getValue() || ''], {
         type: 'application/json',
@@ -319,7 +319,7 @@ root.addEventListener(
       anchor.download = `${id}.json`;
       anchor.href = URL.createObjectURL(blob);
       anchor.click();
-      e.preventDefault();
+      event.preventDefault();
       return;
     }
 
