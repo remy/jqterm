@@ -406,7 +406,7 @@ const updateData = async body => {
 };
 
 async function exec(body, reRequest = false) {
-  if (!id) return;
+  // if (!id) return;
   window.history.replaceState(null, id, getHash());
 
   const res = await fetch(

@@ -8,6 +8,7 @@ const cors = require('cors');
 const tmpdir = require('os').tmpdir();
 const methodOverride = require('method-override');
 const LRU = require('lru-cache');
+const VERSION = require('./package.json').version;
 const readFile = promisify(fs.readFile);
 const options = {
   max: 500,
@@ -150,7 +151,7 @@ app.post('/:id', (req, res, next) => {
 });
 
 // PUT is running the jq query
-app.put('/:id', async (req, res) => {
+app.put('/:id?', async (req, res) => {
   const { id } = req.params;
   const path = `${getFilename(id)}.json`;
   const query = req.body.toString();
@@ -174,6 +175,17 @@ app.put('/:id', async (req, res) => {
       // correct as per command lines
       input = input.split('\n').map(_ => `"${_}"`);
     }
+  }
+
+  if (!id) {
+    input = {
+      version: VERSION,
+      help: 'ctrl + shift + ?',
+      source: 'https://github.com/remy/jace',
+      credit: 'Remy Sharp / @rem',
+      tip: ['Drag and drop .json files', 'in this panel to start querying'],
+    };
+    options.input = 'json';
   }
 
   jq
