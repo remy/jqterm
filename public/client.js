@@ -8,11 +8,11 @@ let API;
 let VERSION;
 
 if (!this.process) {
-  VERSION = 'local';
-  API = 'http://localhost:3100';
-} else {
   API = process.env.API;
   VERSION = process.env.VERSION;
+} else {
+  VERSION = 'local';
+  API = 'http://localhost:3100';
 }
 
 const root = document.documentElement;
