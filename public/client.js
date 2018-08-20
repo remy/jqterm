@@ -1,12 +1,19 @@
-/* global CodeMirror */
+/* global CodeMirror, jq, events */
 const $ = s => document.querySelector(s);
 const isApp = typeof process !== 'undefined';
-if (!this.process) {
-  this.process = { env: { VERSION: 'local', API: 'http://localhost:3100' } };
-}
 
-const API = process.env.API;
-const VERSION = process.env.VERSION;
+window.titlePrefix = 'jqTerm';
+
+let API;
+let VERSION;
+
+if (!this.process) {
+  VERSION = 'local';
+  API = 'http://localhost:3100';
+} else {
+  API = process.env.API;
+  VERSION = process.env.VERSION;
+}
 
 const root = document.documentElement;
 
@@ -18,188 +25,50 @@ const config = {
 
 let id = '';
 
-/* all jq keywords based on following from docs page
-   Array.from( // cast to array
-     new Set( // using a Set to remove dupes
-       $$('h3 code') // method selector
-        .map(_ => _.innerText.replace(/\(.*$/, '')) // strip func args
-        .filter(_ => !_.includes(' ')) // ignore with spaces
-        .filter(_ => /^[a-z]/i.test(_)) // ignore non-alpha funcs
-      )
-    )
-   */
-const keywords = [
-  'add',
-  'all',
-  'any',
-  'arrays',
-  'ascii_downcase',
-  'ascii_upcase',
-  'booleans',
-  'bsearch',
-  'builtins',
-  'capture',
-  'combinations',
-  'contains',
-  'debug',
-  'del',
-  'delpaths',
-  'empty',
-  'endswith',
-  'env',
-  'error',
-  'explode',
-  'finites',
-  'first',
-  'flatten',
-  'floor',
-  'foreach',
-  'from_entries',
-  'fromstream',
-  'getpath',
-  'group_by',
-  'gsub',
-  'halt_error',
-  'halt',
-  'has',
-  'if',
-  'then',
-  'else',
-  'elif',
-  'end',
-  'implode',
-  'in',
-  'index',
-  'indices',
-  'infinite',
-  'input_filename',
-  'input_line_number',
-  'input',
-  'inputs',
-  'inside',
-  'isfinite',
-  'isinfinite',
-  'isnan',
-  'isnormal',
-  'iterables',
-  'join',
-  'keys_unsorted',
-  'keys',
-  'last',
-  'leaf_paths',
-  'length',
-  'limit',
-  'ltrimstr',
-  'map_values',
-  'map',
-  'match',
-  'max_by',
-  'max',
-  'min_by',
-  'min',
-  'modulemeta',
-  'nan',
-  'normals',
-  'nth',
-  'nulls',
-  'numbers',
-  'objects',
-  'path',
-  'paths',
-  'range',
-  'recurse_down',
-  'reduce',
-  'recurse',
-  'reverse',
-  'rindex',
-  'rtrimstr',
-  'scalars',
-  'sort',
-  'sort_by',
-  'scan',
-  'select',
-  'setpath',
-  'split',
-  'splits',
-  'sqrt',
-  'startswith',
-  'stderr',
-  'strings',
-  'sub',
-  'test',
-  'to_entries',
-  'tonumber',
-  'tostream',
-  'tostring',
-  'transpose',
-  'truncate_stream',
-  'type',
-  'unique_by',
-  'unique',
-  'until',
-  'utf8bytelength',
-  'values',
-  'walk',
-  'while',
-  'with_entries',
-];
+const setTitle = config => {
+  let title = null;
+  if (window.last.error) {
+    title = `error`;
+  }
 
-const jqMode = {
-  // The start state contains the rules that are intially used
-  start: [
-    // The regex matches the token, the token property contains the type
-    { regex: /"(?:[^\\]|\\.)*?(?:"|$)/, token: 'string' },
-    // You can match multiple tokens at once. Note that the captured
-    // groups must span the whole string in this case
-    {
-      regex: /(def)(\s+)([a-z$][\w$]*)/,
-      token: ['keyword', null, 'variable-2'],
-    },
-    // Rules are matched in the order in which they appear, so there is
-    // no ambiguity between this one and the one above
-    {
-      regex: new RegExp(
-        `[^_](?:${keywords
-          .concat('def', 'if', 'elif', 'else', 'end', 'then', 'as')
-          .join('|')})\\b`
-      ),
-      token: 'keyword',
-    },
-    { regex: /true|false|null/, token: 'atom' },
-    {
-      regex: /0x[a-f\d]+|[-+]?(?:\.\d+|\d+\.?\d*)(?:e[-+]?\d+)?/i,
-      token: 'number',
-    },
-    { regex: /#.*/, token: 'comment' },
-    { regex: /\/(?:[^\\]|\\.)*?\//, token: 'variable-3' },
-    // A next property will cause the mode to move to a different state
-    // { regex: /\/\*/, token: 'comment', next: 'comment' },
-    { regex: /[-+\/*=<>!\[\]\|]+/, token: 'operator' },
-    // indent and dedent properties guide autoindentation
-    { regex: /[\{\[\(]/, indent: true },
-    { regex: /[\}\]\)]/, dedent: true },
-    { regex: /\$[a-z$][\w$]*/, token: 'variable' },
-  ],
-  // The meta property contains global information about the mode. It
-  // can contain properties like lineComment, which are supported by
-  // all modes, and also directives like dontIndentStates, which are
-  // specific to simple modes.
-  meta: {
-    dontIndentStates: ['comment'],
-    lineComment: '#',
-  },
-};
-
-function getKeys(object) {
-  return Object.keys(object).reduce((acc, curr) => {
-    acc.push(curr);
-    if (typeof object[curr] === 'object') {
-      acc = acc.concat(getKeys(object[curr]));
+  if (!title) {
+    try {
+      const res = JSON.parse(window.last);
+      if (Array.isArray(res)) {
+        title = `array [${res.length}]`;
+      } else if (typeof res === 'string') {
+        title = 'string';
+      } else if (typeof res === 'number') {
+        title = 'number';
+      } else if (typeof res === 'object') {
+        title = `object { props: ${Object.keys(res).length} }`;
+      } else if (res.includes('\n')) {
+        title = `strings (${res.split('\n').length})`;
+      } else {
+        title = 'non JSON';
+      }
+      // window.last = res;
+    } catch (e) {
+      console.log(e);
+      title = 'non JSON';
     }
+  }
 
-    return acc;
-  }, []);
-}
+  let opts = [];
+  if (config.slurp) {
+    opts.push('s');
+  }
+  if (config.rawInput) {
+    opts.push('R');
+  }
+  if (config.raw) {
+    opts.push('r');
+  }
+
+  document.title = `${window.titlePrefix}${
+    opts.length ? ' -' + opts.join('') : ''
+  } — ${title}`;
+};
 
 const guid = (() => {
   function generate() {
@@ -276,6 +145,8 @@ function readHash() {
   }
 }
 
+CodeMirror.defineSimpleMode('jq', jq.jqMode);
+
 const source = CodeMirror.fromTextArea($('#source textarea'), {
   lineNumbers: true,
   mode: 'application/ld+json',
@@ -296,66 +167,82 @@ const result = CodeMirror.fromTextArea($('#result textarea'), {
   gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
 });
 
-CodeMirror.defineSimpleMode('jq', jqMode);
+const resultError = () => {
+  result.setOption('mode', 'plain/text');
+  result.setOption('lineWrapping', true);
+};
+
+const resultReset = () => {
+  result.setOption('mode', 'application/ld+json');
+  result.setOption('lineWrapping', false);
+};
 
 const input = CodeMirror.fromTextArea($('#input textarea'), {
   mode: 'jq',
   autoCloseBrackets: true,
   autocomplete: true,
-  keywords,
+  keywords: jq.keywords,
   autofocus: true,
   lineWrapping: true,
 });
 
-root.addEventListener(
-  'keydown',
-  event => {
-    if (id && event.keyCode === 83 && (event.metaKey || event.ctrlKey)) {
-      // save
-      const blob = new Blob([result.getValue() || ''], {
-        type: 'application/json',
-      });
-      const anchor = document.createElement('a');
-      anchor.download = `${id}.json`;
-      anchor.href = URL.createObjectURL(blob);
-      anchor.click();
-      event.preventDefault();
-      return;
-    }
+const mirrors = {
+  input,
+  result,
+  source,
+};
 
-    if (
-      event.shiftKey &&
-      (event.metaKey || event.ctrlKey) &&
-      event.keyCode == 84
-    ) {
-      root.classList.toggle('hidden-source');
-      event.preventDefault();
-    }
+!isApp &&
+  root.addEventListener(
+    'keydown',
+    event => {
+      if (id && event.keyCode === 83 && (event.metaKey || event.ctrlKey)) {
+        // save
+        const blob = new Blob([result.getValue() || ''], {
+          type: 'application/json',
+        });
+        const anchor = document.createElement('a');
+        anchor.download = `${id}.json`;
+        anchor.href = URL.createObjectURL(blob);
+        anchor.click();
+        event.preventDefault();
+        return;
+      }
 
-    if (
-      event.shiftKey &&
-      (event.metaKey || event.ctrlKey) &&
-      event.keyCode == 191
-    ) {
-      // show help
-      root.classList.add('help');
-      event.preventDefault();
-    }
+      if (
+        event.shiftKey &&
+        (event.metaKey || event.ctrlKey) &&
+        event.keyCode == 84
+      ) {
+        events.emit('set/source-hide', {
+          value: !root.classList.contains('hidden-source'),
+        });
+        event.preventDefault();
+      }
 
-    if (event.keyCode === 27) {
-      root.classList.remove('help');
-    }
-  },
-  true
-);
+      if (
+        event.shiftKey &&
+        (event.metaKey || event.ctrlKey) &&
+        event.keyCode == 191
+      ) {
+        // show help
+        root.classList.add('help');
+        event.preventDefault();
+      }
 
-input.on(
-  'change',
-  debounce(cm => {
+      if (event.keyCode === 27) {
+        root.classList.remove('help');
+      }
+    },
+    true
+  );
+
+const inputChange = (cm, event) => {
+  if (event.origin !== 'setValue') {
     exec(cm.getValue());
-  }),
-  500
-);
+  }
+};
+input.on('change', isApp ? inputChange : debounce(inputChange, 500));
 
 $('#slurp').onchange = function() {
   config.slurp = !!this.checked;
@@ -377,27 +264,24 @@ source.on('drop', cm => {
   cm.setValue('');
 });
 
-source.on(
-  'change',
-  debounce(async (cm, event) => {
-    try {
-      const value = getKeys(JSON.parse(cm.getValue()));
-      input.addKeywordsFromString(value.join(' '));
-    } catch (e) {}
+const sourceChange = async (cm, event) => {
+  jq.sourceChange(cm, input); // update autocomplete keywords
 
-    if (event.origin !== 'setValue') {
-      await updateData(cm.getValue());
-    }
+  if (event.origin !== 'setValue') {
+    await updateData(cm.getValue());
     await exec(input.getValue());
-  }, 1000)
-);
+  }
+};
 
-const updateData = async body => {
+source.on('change', isApp ? sourceChange : debounce(sourceChange, 1000));
+
+const updateData = async (body, skipExec = false) => {
   root.classList.add('loading');
   const res = await fetch(`${API}/${id || ''}?guid=${guid}`, {
     method: 'post',
     body,
   });
+
   // FIXME deal with 404
   const json = await res.json();
   if (json.id && id !== json.id) {
@@ -405,6 +289,7 @@ const updateData = async body => {
     window.history.pushState(null, id, getHash());
   }
   root.classList.remove('loading');
+  if (!skipExec) exec(input.getValue());
 };
 
 async function exec(body, reRequest = false) {
@@ -423,6 +308,7 @@ async function exec(body, reRequest = false) {
       },
     }
   );
+
   if (res.status !== 200) {
     const json = await res.json();
 
@@ -433,18 +319,27 @@ async function exec(body, reRequest = false) {
       }
       return;
     }
+    resultError();
+    window.last = json;
     result.setValue(json.error);
+    setTitle(config);
     return;
   }
+
+  resultReset();
+
   const json = await res.json();
   let output = json;
+  window.last = json;
+  setTitle(config);
   if (config.raw) {
     try {
       output = json
         .split('\n')
-        .map(_ => new Function(`return ${_}`)())
+        .map(_ => _.replace(/^"(.*)"$/, '$1'))
         .join('\n');
     } catch (error) {
+      console.log(error);
       output = json;
     }
   }
@@ -474,6 +369,7 @@ if (!isApp && window.location.pathname !== '/') {
       exec(input.getValue());
     });
 } else {
+  input.setValue('.');
   source.setValue(
     window.last ||
       JSON.stringify(
@@ -488,8 +384,53 @@ if (!isApp && window.location.pathname !== '/') {
         2
       )
   );
+  exec(input.getValue());
 }
 
 input.setCursor({ line: 0, ch: input.getValue().length });
 
-// const widget = source.addLineWidget(source.lastLine(), $('#config'));
+// setup event handling
+events.on('set/config', data => {
+  Object.keys(config).forEach(key => {
+    if (data.hasOwnProperty(key)) {
+      config[key] = data[key];
+    }
+  });
+});
+
+events.on('set/focus', ({ panel }) => mirrors[panel].focus());
+
+events.on('set/theme', ({ value }) => {
+  if (root.classList.contains('theme-dark')) {
+    root.classList.remove('theme-dark');
+  } else {
+    root.classList.remove('theme-light');
+  }
+  root.classList.add(`theme-${value}`);
+});
+
+events.on('set/input', ({ value }) => input.setValue(value));
+events.on('set/source', ({ value }) => {
+  source.setValue(value);
+  jq.sourceChange(source, input);
+  return updateData(value, true);
+});
+
+events.on('set/source-hide', ({ value }) => {
+  if (value) {
+    root.classList.add('hidden-source');
+  } else {
+    root.classList.remove('hidden-source');
+  }
+  result.refresh();
+});
+
+events.on('run/exec', () => exec(input.getValue()));
+events.on('get/source', ({ panel }) => mirrors[panel].getValue());
+events.on('set/busy', ({ value }) => {
+  if (value) {
+    root.classList.add('busy');
+  } else {
+    root.classList.remove('busy');
+  }
+});

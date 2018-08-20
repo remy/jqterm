@@ -1,5 +1,7 @@
 * {
-  font-family: 'Operator Mono', Courier New, Courier, monospace;
+  /* font-family: 'Operator Mono', Courier New, Courier, monospace; */
+  font-family: "Ubuntu mono", "SF Mono", "Monaco", "Inconsolata", "Fira Mono", "Droid Sans Mono", "Source Code Pro", monospace;
+
   font-size: 14px;
   box-sizing: border-box;
 }
@@ -9,6 +11,10 @@ html,
 main {
   margin: 0;
   height: 100%;
+}
+
+.busy, .busy * {
+  cursor: progress !important;
 }
 
 main {
@@ -34,7 +40,7 @@ label {
 }
 
 #input {
-  max-height: 60%;
+  max-height: 40%;
   overflow: scroll;
 }
 
@@ -108,6 +114,21 @@ main .editors > div {
 @media (min-width: 720px) {
   .editors {
     flex-direction: row;
+  }
+
+  .hidden-source main {
+    flex-direction: row;
+  }
+
+  .hidden-source #input {
+    width: 40%;
+    max-height: 100%;
+    border-bottom: 0;
+    border-right: 3px solid #ccc;
+  }
+
+  .hidden-source #input .CodeMirror {
+    height: 100%;
   }
 
   main .editors > div {
@@ -276,4 +297,12 @@ label input[type="checkbox"] {
 
 .CodeMirror.CodeMirror-focused {
   background: white;
+}
+
+.is-app .editor .controls {
+  display: none;
+}
+
+.theme-dark .editor .controls {
+  background: rgba(0, 0,0, .1);
 }

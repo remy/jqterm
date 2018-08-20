@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <key>com.apple.developer.team-identifier</key>
+    <string>FWL5N9BV8V</string>
+    <key>com.apple.application-identifier</key>
+    <string>FWL5N9BV8V.com.remysharp.jqterm</string>
+</dict>
+</plist>

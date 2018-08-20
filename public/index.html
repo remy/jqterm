@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html class="theme-light">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
-  <title>jqterm: jq as a service</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com 'unsafe-inline'">  <title>jqterm: jq as a service</title>
   <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
   <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
 
@@ -16,26 +16,39 @@
   <script src="./vendor/codemirror/5.39.2/addon/fold/foldcode.js"></script>
   <script src="./vendor/codemirror/5.39.2/addon/fold/foldgutter.js"></script>
   <script src="./vendor/codemirror/5.39.2/addon/fold/brace-fold.js"></script>
-
+  <script src="./events.js"></script>
+  <script src="./jq.js"></script>
   <script src="./autocomplete.js"></script>
   <link rel="stylesheet" href="./vendor/codemirror/5.39.2/codemirror.css">
   <link rel="stylesheet" href="./vendor/codemirror/5.39.2/addon/fold/foldgutter.css" />
 
   <link rel="stylesheet" href="./style.css">
   <link rel="stylesheet" href="./theme.css">
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-1656750-53"></script>
-  <script>
+  <script id="ga" type="browser" src="https://www.googletagmanager.com/gtag/js?id=UA-1656750-53">
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
-
     gtag('config', 'UA-1656750-53');
+  </script>
+  <script>
+    if (typeof process !== 'undefined') {
+      document.documentElement.classList.add("is-app");
+      document.write('<script src="./app-bridge.js"><\/script>');
+    } else {
+      const ga = document.getElementById('ga');
+      const ext = document.createElement('script');
+      ext.async = true;
+      ext.src = ga.src;
+      const gaInline = document.createElement('script');
+      gaInline.innerText = ga.innerText;
+      document.head.appendChild(ext);
+      document.head.appendChild(gaInline);
+    }
   </script>
 
 </head>
 
-<body class="theme-light">
+<body>
   <main>
     <div id="input">
       <textarea placeholder="> jq query">.</textarea>
@@ -66,11 +79,6 @@
       </div>
     </div>
   </main>
-  <script>
-    if (typeof process !== 'undefined') {
-      document.write('<script src="./fetch.js"><\/script>');
-    }
-  </script>
   <script src="./client.js"></script>
   <div id="help">
     <div>
