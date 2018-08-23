@@ -228,7 +228,9 @@ const mirrors = {
         // show help
         root.classList.add('help');
         event.preventDefault();
-        $('#help').addEventListener('click', () => root.classList.remove('help'))
+        $('#help').addEventListener('click', (event) =>
+          event.target.id === 'help' && root.classList.remove('help')
+        )
       }
 
       if (event.keyCode === 27) {
