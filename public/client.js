@@ -344,7 +344,6 @@ async function exec(body, reRequest = false) {
   setTitle(config);
   if (config.raw) {
     try {
-      console.log('raw: %s', json);
       output = json
         .split('\n')
         .map(_ => JSON.parse(_))
