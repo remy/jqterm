@@ -38,7 +38,6 @@
 
       self.emit(...event);
     } else {
-      console.log('emit', event);
       root.dispatchEvent(new CustomEvent(event[0], event[1]));
     }
   }
@@ -68,7 +67,6 @@
       }
 
       const handler = event => {
-        console.log('%s fired', name);
         const res = callback(event.detail.data);
         if (event.detail.callback) {
           event.detail.callback(res);
