@@ -116,18 +116,22 @@ main .editors > div {
     flex-direction: row;
   }
 
-  .hidden-source main {
+  .input-left.hidden-source main {
     flex-direction: row;
   }
 
-  .hidden-source #input {
+  .input-left.hidden-source #input {
     width: 40%;
     max-height: 100%;
     border-bottom: 0;
     border-right: 3px solid #ccc;
   }
 
-  .hidden-source #input .CodeMirror {
+  .theme-dark.input-left.hidden-source #input {
+    border-right: 3px solid black;
+  }
+
+  .input-left.hidden-source #input .CodeMirror {
     height: 100%;
   }
 

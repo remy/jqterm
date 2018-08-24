@@ -1,6 +1,14 @@
 (window => {
   const isApp = typeof process !== 'undefined';
 
+  function getSelf() {
+    if (isApp) {
+      const electron = require('electron');
+      return electron.app || electron.remote.getCurrentWindow();
+    }
+    return document.documentElement;
+  }
+
   function getRoot() {
     if (isApp) {
       const electron = require('electron');
@@ -12,30 +20,63 @@
 
   function emit(root, event) {
     if (isApp) {
-      root.emit(...event);
+      const electron = require('electron');
+      let self;
+      if (electron.BrowserWindow) {
+        self = electron.BrowserWindow.getFocusedWindow();
+      }
+
+      if (!self) {
+        if (electron.remote) {
+          self = electron.remote.getCurrentWindow();
+        } else {
+          // app.currentWindow is a horrible hack
+          self =
+            electron.app.currentWindow || electron.app || electron.remote.app;
+        }
+      }
+
+      self.emit(...event);
     } else {
+      console.log('emit', event);
       root.dispatchEvent(new CustomEvent(event[0], event[1]));
     }
   }
 
   const on = isApp ? 'on' : 'addEventListener';
+  const off = isApp ? 'removeListener' : 'removeEventListener';
+  let id = 0;
 
   class Events {
     constructor(namespace = '@events') {
       this.root = getRoot();
+      this.self = getSelf();
+      this.id = id++;
+      this.tracker = [];
       this.namespace = namespace;
+    }
+
+    teardown() {
+      for (let [name, callback] of this.tracker) {
+        this.root[off](name, callback);
+      }
     }
 
     on(name, callback) {
       if (typeof callback !== 'function') {
         throw new Error('.on requires a callback');
       }
-      this.root[on](`${this.namespace}/${name}`, event => {
+
+      const handler = event => {
+        console.log('%s fired', name);
         const res = callback(event.detail.data);
         if (event.detail.callback) {
           event.detail.callback(res);
         }
-      });
+      };
+
+      this.tracker.push([`${this.namespace}/${name}`, handler]);
+      this.self[on](`${this.namespace}/${name}`, handler);
     }
 
     emit(name, data, callback) {

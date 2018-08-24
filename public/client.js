@@ -2,12 +2,12 @@
 const $ = s => document.querySelector(s);
 const isApp = typeof process !== 'undefined';
 
-window.titlePrefix = 'jqTerm';
+if (!window.titlePrefix) window.titlePrefix = 'jqTerm';
 
 let API;
 let VERSION;
 
-if (!this.process) {
+if (typeof process !== 'undefined') {
   API = process.env.API;
   VERSION = process.env.VERSION;
 } else {
@@ -38,10 +38,12 @@ const setTitle = config => {
         title = `array [${res.length}]`;
       } else if (typeof res === 'string') {
         title = 'string';
+      } else if (typeof res === 'boolean') {
+        title = 'boolean';
       } else if (typeof res === 'number') {
         title = 'number';
       } else if (typeof res === 'object') {
-        title = `object { props: ${Object.keys(res).length} }`;
+        title = `object { ${Object.keys(res).length} props }`;
       } else if (res.includes('\n')) {
         title = `strings (${res.split('\n').length})`;
       } else {
@@ -334,9 +336,11 @@ async function exec(body, reRequest = false) {
   setTitle(config);
   if (config.raw) {
     try {
+      console.log('raw: %s', json);
       output = json
         .split('\n')
-        .map(_ => _.replace(/^"(.*)"$/, '$1'))
+        .map(_ => JSON.parse(_))
+        // .map(_ => _.replace(/^"(.*)"$/, '$1').replace(/\\{2}/g, '\\'))
         .join('\n');
     } catch (error) {
       console.log(error);
@@ -369,7 +373,7 @@ if (!isApp && window.location.pathname !== '/') {
       exec(input.getValue());
     });
 } else {
-  input.setValue('.');
+  if (input.getValue() === '') input.setValue('.');
   source.setValue(
     window.last ||
       JSON.stringify(
@@ -434,3 +438,5 @@ events.on('set/busy', ({ value }) => {
     root.classList.remove('busy');
   }
 });
+
+events.emit('ready');

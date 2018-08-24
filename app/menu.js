@@ -1,21 +1,37 @@
 const { Menu, app, dialog, shell } = require('electron');
 const fs = require('fs');
 const share = require('./share');
+const examples = require('./examples.json');
 const Store = require('electron-store');
+const defaultSettings = {
+  slurp: false,
+  raw: false,
+  rawInput: false,
+};
 const store = new Store({
-  settings: {
-    slurp: false,
-    raw: false,
-    rawInput: false,
-    sourceVisible: false,
-  },
+  settings: defaultSettings,
   theme: 'light',
 });
 const handler = require('./handler');
 
 const save = format => () => {
+  let defaultPath = null;
+
+  if (store.get('filename')) {
+    const suffix = format === 'json' ? '-result' : '';
+    defaultPath =
+      store
+        .get('filename')
+        .split('.')
+        .slice(0, -1)
+        .join('.') + suffix;
+  }
   dialog.showSaveDialog(
-    { showsTagField: false, filters: [{ name: format, extensions: [format] }] },
+    {
+      showsTagField: false,
+      defaultPath,
+      filters: [{ name: format, extensions: [format] }],
+    },
     filename => {
       const panel = format === 'jq' ? 'input' : 'result';
       handler.getSource({
@@ -56,7 +72,6 @@ const updateZoom = factor => (menu, browserWindow) => {
 
 app.on('open-file', (event, file) => {
   event.preventDefault();
-  console.log('handle open-file', file);
   handler.openFiles([file]);
 });
 
@@ -67,13 +82,36 @@ const updateConfig = menu => {
   });
 };
 
+const loadExample = m => {
+  const { dataSource, dataInput } = m;
+  Object.keys(defaultSettings).forEach(key => {
+    menu.getMenuItemById(key).checked = false;
+  });
+  store.set({ settings: defaultSettings });
+  handler.load(dataSource, dataInput, defaultSettings);
+};
+
+examples.forEach(menu => {
+  menu.submenu.forEach(menu => {
+    menu.click = loadExample;
+  });
+});
+
 const template = [
   {
     label: 'File',
     submenu: [
       {
-        label: 'New',
+        label: 'New Window',
         accelerator: 'CommandOrControl+n',
+        click: () => {
+          const { makeNewWindow } = require('./window');
+          makeNewWindow();
+        },
+      },
+      {
+        label: 'New Empty',
+        accelerator: 'CommandOrControl+shift+n',
         click: () => handler.createNew(),
       },
       { type: 'separator' },
@@ -96,13 +134,19 @@ const template = [
                 return;
               }
 
-              filePaths.forEach(f => app.addRecentDocument(f));
               handler.openFiles(filePaths);
             }
           );
         },
       },
-      // { role: 'recentDocuments' },
+      {
+        role: 'recentDocuments',
+        submenu: [],
+      },
+      {
+        label: 'Examples',
+        submenu: examples,
+      },
       { type: 'separator' },
       {
         label: 'Share',
@@ -138,10 +182,22 @@ const template = [
   {
     label: 'Options',
     submenu: [
+      {
+        label: 'Reset All',
+        click: () => {
+          Object.keys(defaultSettings).forEach(key => {
+            menu.getMenuItemById(key).checked = false;
+          });
+          store.set({ settings: defaultSettings });
+          handler.configChange(defaultSettings);
+        },
+      },
+      { type: 'separator' },
       { label: 'Source', enabled: false },
       {
         label: 'Slurp (-s)',
         name: 'slurp',
+        id: 'slurp',
         type: 'checkbox',
         click: updateConfig,
         checked: store.get('settings.slurp'),
@@ -149,6 +205,7 @@ const template = [
       {
         label: 'Raw Input (-R)',
         name: 'rawInput',
+        id: 'rawInput',
         type: 'checkbox',
         checked: store.get('settings.rawInput'),
         click: updateConfig,
@@ -158,6 +215,7 @@ const template = [
       {
         label: 'Raw Output (-r)',
         checked: store.get('settings.raw'),
+        id: 'raw',
         name: 'raw',
         type: 'checkbox',
         click: updateConfig,
@@ -168,26 +226,26 @@ const template = [
     label: 'View',
     submenu: [
       {
-        label: 'Hide source',
+        label: 'Hide Source',
         accelerator: 'CommandOrControl+shift+t',
         type: 'checkbox',
         name: 'hide-source',
-        checked: store.get('settings.hideSource'),
+        checked: store.get('hideSource'),
         click(menu) {
-          store.set('settings.hideSource', menu.checked);
+          store.set('hideSource', menu.checked);
           handler.hideSource(menu.checked);
         },
       },
       { type: 'separator' },
       {
-        label: 'Light theme',
+        label: 'Light Theme',
         type: 'radio',
         name: 'theme',
         click: updateTheme('light'),
         checked: store.get('theme') === 'light',
       },
       {
-        label: 'Dark theme',
+        label: 'Dark Theme',
         type: 'radio',
         name: 'theme',
         click: updateTheme('dark'),
@@ -239,6 +297,24 @@ if (process.platform === 'darwin') {
     { role: 'zoom' },
   ];
 }
+
+let currentWindow = null;
+app.on('browser-window-focus', (event, window) => {
+  if (currentWindow === window) {
+    return;
+  }
+  currentWindow = window;
+  if (!window.settings) {
+    return;
+  }
+
+  const settings = window.settings;
+  Object.keys(defaultSettings).forEach(key => {
+    menu.getMenuItemById(key).checked = settings[key];
+  });
+  store.set({ settings });
+  handler.configChange(settings, false);
+});
 
 const menu = Menu.buildFromTemplate(template);
 Menu.setApplicationMenu(menu);

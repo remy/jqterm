@@ -34,7 +34,6 @@
   <script>
     if (typeof process !== 'undefined') {
       document.documentElement.classList.add("is-app");
-      document.write('<script src="./app-bridge.js"><\/script>');
     } else {
       const ga = document.getElementById('ga');
       const ext = document.createElement('script');
@@ -80,6 +79,11 @@
       </div>
     </div>
   </main>
+  <script>
+    if (typeof process !== 'undefined') {
+      document.write('<script src="./app-bridge.js"><\/script>');
+    }
+  </script>
   <script src="./client.js"></script>
   <div id="help">
     <div>

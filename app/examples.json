@@ -1,0 +1,507 @@
+[
+  {
+    "label": "Basic filters",
+    "submenu": [
+      {
+        "label": "Identity: `.`",
+        "dataSource": "\"Hello, world!\"",
+        "dataInput": "."
+      },
+      {
+        "label": "Object Identifier-Index: `.foo`, `.foo.bar`",
+        "dataSource": "{\"foo\": 42, \"bar\": \"less interesting data\"}",
+        "dataInput": ".foo"
+      },
+      {
+        "label": "Optional Object Identifier-Index: `.foo?`",
+        "dataSource": "{\"foo\": 42, \"bar\": \"less interesting data\"}",
+        "dataInput": ".foo?"
+      },
+      {
+        "label": "Array Index: `.[2]`",
+        "dataSource":
+          "[{\"name\":\"JSON\", \"good\":true}, {\"name\":\"XML\", \"good\":false}]",
+        "dataInput": ".[0]"
+      },
+      {
+        "label": "Array/String Slice: `.[10:15]`",
+        "dataSource": "[\"a\",\"b\",\"c\",\"d\",\"e\"]",
+        "dataInput": ".[2:4]"
+      },
+      {
+        "label": "Array/Object Value Iterator: `.[]`",
+        "dataSource":
+          "[{\"name\":\"JSON\", \"good\":true}, {\"name\":\"XML\", \"good\":false}]",
+        "dataInput": ".[]"
+      },
+      {
+        "label": "Comma: `,`",
+        "dataSource":
+          "{\"foo\": 42, \"bar\": \"something else\", \"baz\": true}",
+        "dataInput": ".foo, .bar"
+      },
+      {
+        "label": "Pipe: `|`",
+        "dataSource":
+          "[{\"name\":\"JSON\", \"good\":true}, {\"name\":\"XML\", \"good\":false}]",
+        "dataInput": ".[] | .name"
+      },
+      {
+        "label": "Parenthesis",
+        "dataSource": "1",
+        "dataInput": "(. + 2) * 5"
+      }
+    ]
+  },
+  {
+    "label": "Types and Values",
+    "submenu": [
+      {
+        "label": "Array construction: `[]`",
+        "dataSource":
+          "{\"user\":\"stedolan\", \"projects\": [\"jq\", \"wikiflow\"]}",
+        "dataInput": "[.user, .projects[]]"
+      },
+      {
+        "label": "Object Construction: `{}`",
+        "dataSource":
+          "{\"user\":\"stedolan\",\"titles\":[\"JQ Primer\", \"More JQ\"]}",
+        "dataInput": "{user, title: .titles[]}"
+      },
+      {
+        "label": "Recursive Descent: `..`",
+        "dataSource": "[[{\"a\":1}]]",
+        "dataInput": "..|.a?"
+      }
+    ]
+  },
+  {
+    "label": "Builtin operators and functions",
+    "submenu": [
+      {
+        "label": "Addition: `+`",
+        "dataSource": "{\"a\": 7}",
+        "dataInput": ".a + 1"
+      },
+      {
+        "label": "Subtraction: `-`",
+        "dataSource": "{\"a\":3}",
+        "dataInput": "4 - .a"
+      },
+      {
+        "label": "Multiplication, division, modulo: `*`, `/`, and `%`",
+        "dataSource": 5,
+        "dataInput": "10 / . * 3"
+      },
+      {
+        "label": "`length`",
+        "dataSource": "[[1,2], \"string\", {\"a\":2}, null]",
+        "dataInput": ".[] | length"
+      },
+      {
+        "label": "`utf8bytelength`",
+        "dataSource": "\"\\u03bc\"",
+        "dataInput": "utf8bytelength"
+      },
+      {
+        "label": "`keys`, `keys_unsorted`",
+        "dataSource": "{\"abc\": 1, \"abcd\": 2, \"Foo\": 3}",
+        "dataInput": "keys"
+      },
+      {
+        "label": "`has(key)`",
+        "dataSource": "[{\"foo\": 42}, {}]",
+        "dataInput": "map(has(\"foo\"))"
+      },
+      {
+        "label": "`in`",
+        "dataSource": "[\"foo\", \"bar\"]",
+        "dataInput": ".[] | in({\"foo\": 42})"
+      },
+      {
+        "label": "`map(x)`, `map_values(x)`",
+        "dataSource": "[1,2,3]",
+        "dataInput": "map(.+1)"
+      },
+      {
+        "label": "`path(path_expression)`",
+        "dataSource": "null",
+        "dataInput": "path(.a[0].b)"
+      },
+      {
+        "label": "`del(path_expression)`",
+        "dataSource": "{\"foo\": 42, \"bar\": 9001, \"baz\": 42}",
+        "dataInput": "del(.foo)"
+      },
+      {
+        "label": "`getpath(PATHS)`",
+        "dataSource": "{\"a\":{\"b\":0, \"c\":1}}",
+        "dataInput": "[getpath([\"a\",\"b\"], [\"a\",\"c\"])]"
+      },
+      {
+        "label": "`setpath(PATHS; VALUE)`",
+        "dataSource": "null",
+        "dataInput": "setpath([\"a\",\"b\"]; 1)"
+      },
+      {
+        "label": "`delpaths(PATHS)`",
+        "dataSource": "{\"a\":{\"b\":1},\"x\":{\"y\":2}}",
+        "dataInput": "delpaths([[\"a\",\"b\"]])"
+      },
+      {
+        "label": "`to_entries`, `from_entries`, `with_entries`",
+        "dataSource": "{\"a\": 1, \"b\": 2}",
+        "dataInput": "to_entries"
+      },
+      {
+        "label": "`select(boolean_expression)`",
+        "dataSource": "[1,5,3,0,7]",
+        "dataInput": "map(select(. >= 2))"
+      },
+      {
+        "label": "`arrays`, `objects`, `iterables` ...",
+        "dataSource": "[[],{},1,\"foo\",null,true,false]",
+        "dataInput": ".[]|numbers"
+      },
+      {
+        "label": "`empty`",
+        "dataSource": "null",
+        "dataInput": "1, empty, 2"
+      },
+      {
+        "label": "`$__loc__`",
+        "dataSource": "null",
+        "dataInput": "try error(\"\\($__loc__)\") catch ."
+      },
+      {
+        "label": "`paths`, `paths(node_filter)`, `leaf_paths`",
+        "dataSource": "[1,[[],{\"a\":2}]]",
+        "dataInput": "[paths]"
+      },
+      {
+        "label": "`add`",
+        "dataSource": "[\"a\",\"b\",\"c\"]",
+        "dataInput": "add"
+      },
+      {
+        "label": "`any`, `any(condition)`, `any(generator; condition)`",
+        "dataSource": "[true, false]",
+        "dataInput": "any"
+      },
+      {
+        "label": "`all`, `all(condition)`, `all(generator; condition)`",
+        "dataSource": "[true, false]",
+        "dataInput": "all"
+      },
+      {
+        "label": "`flatten`, `flatten(depth)`",
+        "dataSource": "[1, [2], [[3]]]",
+        "dataInput": "flatten"
+      },
+      {
+        "label": "`range(upto)`, `range(from;upto)` `range(from;upto;by)`",
+        "dataSource": "null",
+        "dataInput": "range(2;4)"
+      },
+      {
+        "label": "`floor`",
+        "dataSource": "3.14159",
+        "dataInput": "floor"
+      },
+      {
+        "label": "`sqrt`",
+        "dataSource": "9",
+        "dataInput": "sqrt"
+      },
+      {
+        "label": "`tonumber`",
+        "dataSource": "[1, \"1\"]",
+        "dataInput": ".[] | tonumber"
+      },
+      {
+        "label": "`tostring`",
+        "dataSource": "[1, \"1\", [1]]",
+        "dataInput": ".[] | tostring"
+      },
+      {
+        "label": "`type`",
+        "dataSource": "[0, false, [], {}, null, \"hello\"]",
+        "dataInput": "map(type)"
+      },
+      {
+        "label":
+          "`infinite`, `nan`, `isinfinite`, `isnan`, `isfinite`, `isnormal`",
+        "dataSource": "[-1, 1]",
+        "dataInput": ".[] | (infinite * .) < 0"
+      },
+      {
+        "label": "`sort, sort_by(path_expression)`",
+        "dataSource": "[8,3,null,6]",
+        "dataInput": "sort"
+      },
+      {
+        "label": "`group_by(path_expression)`",
+        "dataSource":
+          "[{\"foo\":1, \"bar\":10}, {\"foo\":3, \"bar\":100}, {\"foo\":1, \"bar\":1}]",
+        "dataInput": "group_by(.foo)"
+      },
+      {
+        "label": "`min`, `max`, `min_by(path_exp)`, `max_by(path_exp)`",
+        "dataSource": "[5,4,2,7]",
+        "dataInput": "min"
+      },
+      {
+        "label": "`unique`, `unique_by(path_exp)`",
+        "dataSource": "[1,2,5,3,5,3,1,3]",
+        "dataInput": "unique"
+      },
+      {
+        "label": "`reverse`",
+        "dataSource": "[1,2,3,4]",
+        "dataInput": "reverse"
+      },
+      {
+        "label": "`contains(element)`",
+        "dataSource": "\"foobar\"",
+        "dataInput": "contains(\"bar\")"
+      },
+      {
+        "label": "`indices(s)`",
+        "dataSource": "\"a,b, cd, efg, hijk\"",
+        "dataInput": "indices(\", \")"
+      },
+      {
+        "label": "`index(s)`, `rindex(s)`",
+        "dataSource": "\"a,b, cd, efg, hijk\"",
+        "dataInput": "index(\", \")"
+      },
+      {
+        "label": "`inside`",
+        "dataSource": "\"bar\"",
+        "dataInput": "inside(\"foobar\")"
+      },
+      {
+        "label": "`startswith(str)`",
+        "dataSource": "[\"fo\", \"foo\", \"barfoo\", \"foobar\", \"barfoob\"]",
+        "dataInput": "[.[]|startswith(\"foo\")]"
+      },
+      {
+        "label": "`endswith(str)`",
+        "dataSource": "[\"foobar\", \"barfoo\"]",
+        "dataInput": "[.[]|endswith(\"foo\")]"
+      },
+      {
+        "label": "`combinations`, `combinations(n)`",
+        "dataSource": "[[1,2], [3, 4]]",
+        "dataInput": "combinations"
+      },
+      {
+        "label": "`ltrimstr(str)`",
+        "dataSource": "[\"fo\", \"foo\", \"barfoo\", \"foobar\", \"afoo\"]",
+        "dataInput": "[.[]|ltrimstr(\"foo\")]"
+      },
+      {
+        "label": "`rtrimstr(str)`",
+        "dataSource": "[\"fo\", \"foo\", \"barfoo\", \"foobar\", \"foob\"]",
+        "dataInput": "[.[]|rtrimstr(\"foo\")]"
+      },
+      {
+        "label": "`explode`",
+        "dataSource": "\"foobar\"",
+        "dataInput": "explode"
+      },
+      {
+        "label": "`implode`",
+        "dataSource": "[65, 66, 67]",
+        "dataInput": "implode"
+      },
+      {
+        "label": "`split(str)`",
+        "dataSource": "\"a, b,c,d, e, \"",
+        "dataInput": "split(\", \")"
+      },
+      {
+        "label": "`join(str)`",
+        "dataSource": "[\"a\",\"b,c,d\",\"e\"]",
+        "dataInput": "join(\", \")"
+      },
+      {
+        "label": "`while(cond; update)`",
+        "dataSource": "1",
+        "dataInput": "[while(.<100; .*2)]"
+      },
+      {
+        "label": "`until(cond; next)`",
+        "dataSource": "4",
+        "dataInput": "[.,1]|until(.[0] < 1; [.[0] - 1, .[1] * .[0]])|.[1]"
+      },
+      {
+        "label":
+          "`recurse(f)`, `recurse`, `recurse(f; condition)`, `recurse_down`",
+        "dataSource": "{\"foo\":[{\"foo\": []}, {\"foo\":[{\"foo\":[]}]}]}",
+        "dataInput": "recurse(.foo[])"
+      },
+      {
+        "label": "`transpose`",
+        "dataSource": "[[1], [2,3]]",
+        "dataInput": "transpose"
+      },
+      {
+        "label": "`bsearch(x)`",
+        "dataSource": "[0,1]",
+        "dataInput": "bsearch(0)"
+      },
+      {
+        "label": "String interpolation - `\\(foo)`",
+        "dataSource": "42",
+        "dataInput": "\"The input was \\(.), which is one less than \\(.+1)\""
+      },
+      {
+        "label": "Convert to/from JSON",
+        "dataSource": "[1, \"foo\", [\"foo\"]]",
+        "dataInput": "[.[]|tostring]"
+      },
+      {
+        "label": "Format strings and escaping",
+        "dataSource": "\"This works if x < y\"",
+        "dataInput": "@html"
+      },
+      {
+        "label": "Dates",
+        "dataSource": "\"2015-03-05T23:51:47Z\"",
+        "dataInput": "fromdate"
+      }
+    ]
+  },
+  {
+    "label": "Conditionals and Comparisons",
+    "submenu": [
+      {
+        "label": "`==`, `!=`",
+        "dataSource": "[1, 1.0, \"1\", \"banana\"]",
+        "dataInput": ".[] == 1"
+      },
+      {
+        "label": "if-then-else",
+        "dataSource": 2,
+        "dataInput":
+          "if . == 0 then\n  \"zero\"\nelif . == 1 then\n  \"one\"\nelse\n  \"many\"\nend"
+      },
+      {
+        "label": "`>, >=, <=, <`",
+        "dataSource": 2,
+        "dataInput": ". < 5"
+      },
+      {
+        "label": "and/or/not",
+        "dataSource": "null",
+        "dataInput": "42 and \"a string\""
+      },
+      {
+        "label": "Alternative operator: `//`",
+        "dataSource": "{\"foo\": 19}",
+        "dataInput": ".foo // 42"
+      },
+      {
+        "label": "try-catch",
+        "dataSource": "true",
+        "dataInput": "try .a catch \". is not an object\""
+      },
+      {
+        "label": "Error Suppression / Optional Operator: `?`",
+        "dataSource": "[{}, true, {\"a\":1}]",
+        "dataInput": "[.[]|(.a)?]"
+      }
+    ]
+  },
+  {
+    "label": "Regular expressions (PCRE)",
+    "submenu": [
+      {
+        "label": "`test(val)`, `test(regex; flags)`",
+        "dataSource": "\"foo\"",
+        "dataInput": "test(\"foo\")"
+      },
+      {
+        "label": "`match(val)`, `match(regex; flags)`",
+        "dataSource": "\"abc abc\"",
+        "dataInput": "match(\"(abc)+\"; \"g\")"
+      },
+      {
+        "label": "`capture(val)`, `capture(regex; flags)`",
+        "dataSource": "\"xyzzy-14\"",
+        "dataInput": "capture(\"(?<a>[a-z]+)-(?<n>[0-9]+)\")"
+      }
+    ]
+  },
+  {
+    "label": "Advanced features",
+    "submenu": [
+      {
+        "label":
+          "Variable / Symbolic Binding Operator: `... as $identifier | ...`",
+        "dataSource": "{\"foo\":10, \"bar\":200}",
+        "dataInput": ".bar as $x | .foo | . + $x"
+      },
+      {
+        "label": "Defining Functions",
+        "dataSource": "[[1,2],[10,20]]",
+        "dataInput": "def addvalue(f): . + [f]; map(addvalue(.[0]))"
+      },
+      {
+        "label": "Reduce",
+        "dataSource": "[10,2,5,3]",
+        "dataInput": "reduce .[] as $item (0; . + $item)"
+      },
+      {
+        "label": "`isempty(exp)`",
+        "dataSource": "null",
+        "dataInput": "isempty(empty)"
+      },
+      {
+        "label": "`limit(n; exp)`",
+        "dataSource": "[0,1,2,3,4,5,6,7,8,9]",
+        "dataInput": "[limit(3;.[])]"
+      },
+      {
+        "label": "`first(expr)`, `last(expr)`, `nth(n; expr)`",
+        "dataSource": "10",
+        "dataInput": "[first(range(.)), last(range(.)), nth(./2; range(.))]"
+      },
+      {
+        "label": "`first`, `last`, `nth(n)`",
+        "dataSource": "10",
+        "dataInput": "[range(.)]|[first, last, nth(5)]"
+      },
+      {
+        "label": "`foreach`",
+        "dataSource": "[1,2,3,4,null,\"a\",\"b\",null]",
+        "dataInput":
+          "[foreach .[] as $item ([[],[]]; if $item == null then [[],.[0]] else [(.[0] + [$item]),[]] end; if $item == null then .[1] else empty end)]"
+      },
+      {
+        "label": "Generators and iterators",
+        "dataSource": "null",
+        "dataInput":
+          "def range(init; upto; by): def _range: if (by > 0 and . < upto) or (by < 0 and . > upto) then ., ((.+by)|_range) else . end; if by == 0 then init else init|_range end | select((by > 0 and . < upto) or (by < 0 and . > upto)); range(0; 10; 3)"
+      }
+    ]
+  },
+
+  {
+    "label": "Assignment",
+    "submenu": [
+      {
+        "label": "Update-assignment: `|=`",
+        "dataSource": "[true,false,[5,true,[true,[false]],false]]",
+        "dataInput": "(..|select(type==\"boolean\")) |= if . then 1 else 0 end"
+      },
+      {
+        "label":
+          "Arithmetic update-assignment: `+=`, `-=`, `*=`, `/=`, `%=`, `//=`",
+        "dataSource": "{\"foo\": 42}",
+        "dataInput": ".foo += 1"
+      }
+    ]
+  }
+]

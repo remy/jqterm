@@ -175,7 +175,9 @@
     try {
       const value = getKeys(JSON.parse(cm.getValue()));
       input.addKeywordsFromString(value.join(' '));
-    } catch (e) {}
+    } catch (e) {
+      // console.log('failed to parse', e);
+    }
   };
 
   function getKeys(object) {

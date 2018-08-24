@@ -5,32 +5,24 @@ const path = require('path');
 const fs = require('fs');
 const parse = require('url').parse;
 const qs = require('querystring');
+const Store = require('electron-store');
+const store = new Store();
 const cwd = (electron.app || electron.remote.app).getPath('userData');
-const filename = path.resolve(cwd, 'last.json');
+const lastFilename = path.resolve(cwd, 'last.json');
+let filename = store.has('filename') ? store.get('filename') : lastFilename;
 const writeFileAtomic = require('write-file-atomic');
 const makeDir = require('make-dir');
-const Store = require('electron-store');
 const events = require('./events');
-const store = new Store();
 
-require('../app/handler');
+require('../app/drag');
 
 const theme = store.get('theme');
 document.documentElement.classList.remove('theme-light');
-document.documentElement.classList.add(`theme-${theme}`);
+document.documentElement.classList.add(`theme-${theme || 'light'}`);
 
-let useFile = false;
-
-window.titlePrefix = `jqTerm`;
-document.title = `jqTerm`;
-
-events.on('set/filename', filename => {
-  if (!filename) {
-    window.titlePrefix = `jqTerm`;
-    return;
-  }
-  window.titlePrefix = `jqTerm — ${filename}`;
-});
+if (store.has('query')) {
+  document.querySelector('#input textarea').value = store.get('query');
+}
 
 let json = null;
 try {
@@ -39,18 +31,46 @@ try {
     throw new Error();
   }
 } catch (error) {
-  if (error.code === 'ENOENT') {
-    makeDir.sync(path.dirname(filename));
-  }
+  try {
+    json = fs.readFileSync(lastFilename, 'utf8');
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      makeDir.sync(path.dirname(lastFilename));
+    }
 
-  json = JSON.stringify(require('../lib/template'), '', 2);
-  writeFileAtomic(filename, json, () => {});
+    writeFileAtomic(lastFilename, json, () => {});
+  }
 }
 
+let useFile = false;
+
+window.titlePrefix = store.get('filename')
+  ? path.basename(store.get('filename'))
+  : `Untitled`;
+document.title = `jqTerm`;
 window.last = json;
 
+window.onbeforeunload = () => events.teardown();
+
+events.on('set/filename', ({ base, filename: _filename = null }) => {
+  store.set({ filename: _filename });
+  if (!base) {
+    window.titlePrefix = `Untitled`;
+    useFile = false;
+    filename = null;
+    return;
+  }
+  window.titlePrefix = base;
+  filename = _filename;
+});
+
+events.on(`set/source`, ({ value }) => {
+  Post(value);
+});
+
 function Put({ jq, query }) {
-  let input = useFile ? filename : json;
+  const fromFile = useFile && filename;
+  let input = fromFile ? filename : json;
 
   if (!useFile && input.length === 0) {
     input = '""';
@@ -59,8 +79,13 @@ function Put({ jq, query }) {
   const options = {
     slurp: query.slurp === 'true',
     output: 'pretty',
-    input: useFile ? 'file' : 'string',
+    input: fromFile ? 'file' : 'string',
   };
+
+  if (!fromFile && options.slurp) {
+    options.input = 'file';
+    input = lastFilename;
+  }
 
   if (query['raw-input'] === 'true') {
     options.input = 'string';
@@ -75,6 +100,8 @@ function Put({ jq, query }) {
     }
   }
 
+  store.set('query', jq.trim() || '.');
+
   return lib
     .run({
       input: input.length ? input : '',
@@ -82,55 +109,18 @@ function Put({ jq, query }) {
       options,
     })
     .then(({ result, status }) => {
-      let title = null;
-      if (result.error) {
-        if (result.error === 'spawn E2BIG') {
-          useFile = true;
-          console.log('switching to file based query');
-          return Put({ jq, query });
-        }
-        title = `error`;
+      if (result.error && result.error === 'spawn E2BIG') {
+        useFile = true;
+        console.log('switching to file based query');
+        return Put({ jq, query });
       }
 
       let canParse = false;
-      if (!title) {
-        try {
-          const res = JSON.parse(result);
-          canParse = true;
-          if (Array.isArray(res)) {
-            title = `array [${res.length}]`;
-          } else if (typeof res === 'string') {
-            title = 'string';
-          } else if (typeof res === 'number') {
-            title = 'number';
-          } else if (typeof res === 'object') {
-            title = `object { props: ${Object.keys(res).length} }`;
-          } else if (res.includes('\n')) {
-            title = `strings (${res.split('\n').length})`;
-          } else {
-            title = 'non JSON';
-          }
-          // result = res;
-        } catch (e) {
-          console.log(e);
-          title = 'non JSON';
-        }
-      }
+      try {
+        JSON.parse(result);
+        canParse = true;
+      } catch (e) {}
 
-      let opts = [];
-      if (store.get('settings.slurp')) {
-        opts.push('s');
-      }
-      if (store.get('settings.rawInput')) {
-        opts.push('R');
-      }
-      if (store.get('settings.raw')) {
-        opts.push('r');
-      }
-
-      document.title = `${window.titlePrefix}${
-        opts.length ? ' -' + opts.join('') : ''
-      } — ${title}`;
       useFile = true;
       return {
         status,
@@ -160,7 +150,7 @@ function Post(data) {
   useFile = false;
 
   // async to avoid racing
-  writeFileAtomic(filename, data, () => {});
+  writeFileAtomic(lastFilename, data, () => {});
 }
 
 window.fetch = (url, options) => {
