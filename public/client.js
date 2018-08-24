@@ -7,7 +7,11 @@ if (!window.titlePrefix) window.titlePrefix = 'jqTerm';
 let API;
 let VERSION;
 
-if (typeof process !== 'undefined') {
+if (typeof process === 'undefined') {
+  window.process = { env: {} };
+}
+
+if (process.env.API) {
   API = process.env.API;
   VERSION = process.env.VERSION;
 } else {
@@ -230,9 +234,10 @@ const mirrors = {
         // show help
         root.classList.add('help');
         event.preventDefault();
-        $('#help').addEventListener('click', (event) =>
-          event.target.id === 'help' && root.classList.remove('help')
-        )
+        $('#help').addEventListener(
+          'click',
+          event => event.target.id === 'help' && root.classList.remove('help')
+        );
       }
 
       if (event.keyCode === 27) {
