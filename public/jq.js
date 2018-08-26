@@ -140,7 +140,7 @@
       // no ambiguity between this one and the one above
       {
         regex: new RegExp(
-          `[^_](?:${keywords
+          `\\b(?:${keywords
             .concat('def', 'if', 'elif', 'else', 'end', 'then', 'as')
             .join('|')})\\b`
         ),

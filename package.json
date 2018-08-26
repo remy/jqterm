@@ -7,7 +7,7 @@
   "scripts": {
     "app": "nodemon -x 'electron app'",
     "start": "node server.js",
-    "dev": "nodemon server.js",
+    "dev": "nodemon server.js -i dist -i public -e js -V",
     "package": "electron-builder --dir",
     "build": "VERSION=$npm_package_version node ./build.js",
     "deploy": "now -E .env && now alias"
@@ -56,12 +56,7 @@
     "productName": "jqTerm",
     "mac": {
       "category": "public.app-category.development",
-      "target": [
-        "pkg",
-        "dmg",
-        "zip",
-        "mas"
-      ],
+      "target": ["pkg", "dmg", "zip", "mas"],
       "entitlements": "build/entitlements.mac.plist",
       "type": "distribution",
       "icon": "build/icon.icns"
@@ -82,11 +77,7 @@
   },
   "repository": {},
   "license": "MIT",
-  "keywords": [
-    "node",
-    "glitch",
-    "express"
-  ],
+  "keywords": ["node", "glitch", "express"],
   "optionalDependencies": {},
   "author": "Remy Sharp",
   "devDependencies": {
