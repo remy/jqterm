@@ -123,6 +123,19 @@
     'walk',
     'while',
     'with_entries',
+    // from Dates
+    'strptime',
+    'strftime',
+    'strflocaltime',
+    'mktime',
+    'gmtime',
+    'localtime',
+    'now',
+    'fromdateiso8601',
+    'todateiso8601',
+    'fromdate',
+    'todate',
+    'todateiso8601',
   ];
 
   const jqMode = {
@@ -142,7 +155,7 @@
         regex: new RegExp(
           `\\b(?:${keywords
             .concat('def', 'if', 'elif', 'else', 'end', 'then', 'as')
-            .join('|')})\\b`
+            .join('|')})(?![:.])`
         ),
         token: 'keyword',
       },
