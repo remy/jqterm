@@ -159,7 +159,7 @@ app.use(require('./error'));
 
 // listen for requests :)
 const port = process.env.PORT || 3000;
-const listener = app.listen(port, () => {
+app.listen(port, () => {
   console.log('running', port);
   process.env = {};
 });

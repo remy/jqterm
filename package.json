@@ -91,7 +91,7 @@
   "optionalDependencies": {},
   "author": "Remy Sharp",
   "devDependencies": {
-    "electron": "^3.0.10",
+    "electron": "^4.0.2",
     "electron-builder": "^20.28.1",
     "js-yaml": "^3.12.0"
   }

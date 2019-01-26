@@ -223,6 +223,7 @@ const template = [
     submenu: [
       {
         label: 'Reset All',
+        accelerator: 'Command+Shift+r',
         click: () => {
           Object.keys(defaultSettings).forEach(key => {
             menu.getMenuItemById(key).checked = false;
