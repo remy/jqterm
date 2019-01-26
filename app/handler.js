@@ -39,7 +39,7 @@ function getSource({ panel, callback }) {
 }
 
 function createNew() {
-  events.emit(`set/input`, { value: '.' });
+  events.emit(`set/input`, { value: '' });
   events.emit(`set/source`, { value: newFile });
   events.emit('set/filename', { base: false });
   events.emit('run/exec');

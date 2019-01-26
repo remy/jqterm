@@ -2,6 +2,7 @@ const { app, BrowserWindow, nativeImage } = require('electron');
 const join = require('path').join;
 const Store = require('electron-store');
 const windowStateKeeper = require('electron-window-state');
+const { parseZoom } = require('./utils');
 
 const store = new Store({ zoom: 1 });
 
@@ -16,16 +17,6 @@ const delay = (fn, timeout) =>
 const icon = nativeImage.createFromPath(join(__dirname, 'icon.png'));
 
 require('electron-context-menu')();
-// {
-//   prepend: (params, browserWindow) => {
-//     return [
-//       {
-//         label: 'Format Document',
-//         visible: true,
-//       },
-//     ];
-//   },
-// });
 
 const windows = new Set();
 
@@ -35,6 +26,10 @@ function makeNewWindow(makeEmpty = false) {
     defaultHeight: 600,
   });
 
+  const zoomFactor = parseZoom(store.get('zoom'));
+
+  console.log('initing zoom to %s', zoomFactor);
+
   let mainWindow = new BrowserWindow({
     height: mainWindowState.height,
     width: mainWindowState.width,
@@ -43,7 +38,8 @@ function makeNewWindow(makeEmpty = false) {
     show: false,
     title: `#${windows.size}`,
     webPreferences: {
-      zoomFactor: store.get('zoom'),
+      zoomFactor,
+      zoomLevel: 0,
     },
     icon,
   });
@@ -79,7 +75,7 @@ function makeNewWindow(makeEmpty = false) {
       if (makeEmpty) {
         promise = mainWindow.webContents.executeJavaScript(
           `
-            input.setValue('.');
+            input.setValue('');
             source.setValue('{}');
             jq.sourceChange(source, input);
             updateData('{}', true);

@@ -1,7 +1,7 @@
 {
   "name": "jqTerm",
   "productName": "jqTerm",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "A jq service",
   "main": "app",
   "scripts": {
@@ -16,6 +16,7 @@
     "@remy/envy": "^4.0.2",
     "@remy/node-jq": "^1.1.7",
     "body-parser": "^1.18.2",
+    "js-yaml": "^3.12.0",
     "cors": "^2.8.4",
     "doc-ready": "^1.0.4",
     "express": "^4.16.2",
@@ -92,7 +93,6 @@
   "author": "Remy Sharp",
   "devDependencies": {
     "electron": "^4.0.2",
-    "electron-builder": "^20.28.1",
-    "js-yaml": "^3.12.0"
+    "electron-builder": "^20.38.5"
   }
 }

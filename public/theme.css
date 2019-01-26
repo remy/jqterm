@@ -274,3 +274,5 @@
   color: #5c6370;
   font-style: italic;
 }
+.theme-light .CodeMirror pre.CodeMirror-placeholder { color: #999; }
+.theme-dark .CodeMirror pre.CodeMirror-placeholder { color: #777; }

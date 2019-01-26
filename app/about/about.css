@@ -1,12 +1,12 @@
 body {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   color: #333;
-  background-color: #fff;
+  background-color: #efefef;
   padding: 16px;
 }
 
 #img {
-  max-width: 50%;
+  max-width: 40%;
   display: block;
   margin: 0 auto;
 }
@@ -19,12 +19,12 @@ body {
 }
 
 #bug a {
-  color: #ccc;
+  color: #666;
 }
 
 h1 {
   text-align: center;
-  font-size: 24px;
+  font-size: 18px;
 }
 
 h2 {

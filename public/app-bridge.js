@@ -104,7 +104,7 @@ function Put({ jq, query }) {
     }
   }
 
-  store.set('query', jq.trim() || '.');
+  store.set('query', jq.trim() || '');
 
   return lib
     .run({

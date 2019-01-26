@@ -30,8 +30,8 @@ docReady(() => {
     shell.openExternal(bugLink.href);
   });
 
-  $('h1').innerHTML = options.title;
-  $('h2').innerHTML = options.version;
+  $('#title').innerHTML = options.title;
+  $('#version').innerHTML = options.version;
 
   $('#img').src = options.icon;
 });

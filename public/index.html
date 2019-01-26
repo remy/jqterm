@@ -10,19 +10,20 @@
   <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
   <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
 
-  <script src="./vendor/codemirror/5.39.2/codemirror.min.js"></script>
-  <script src="./vendor/codemirror/5.39.2/mode/javascript/javascript.min.js"></script>
-  <script src="./vendor/codemirror/5.39.2/addon/edit/closebrackets.min.js"></script>
-  <script src="./vendor/codemirror/5.39.2/addon/scroll/scrollpastend.min.js"></script>
-  <script src="./vendor/codemirror/5.39.2/addon/mode/simple.min.js"></script>
-  <script src="./vendor/codemirror/5.39.2/addon/fold/foldcode.js"></script>
-  <script src="./vendor/codemirror/5.39.2/addon/fold/foldgutter.js"></script>
-  <script src="./vendor/codemirror/5.39.2/addon/fold/brace-fold.js"></script>
+  <script src="./vendor/codemirror/5.43.0/codemirror.min.js"></script>
+  <script src="./vendor/codemirror/5.43.0/mode/javascript/javascript.min.js"></script>
+  <script src="./vendor/codemirror/5.43.0/addon/edit/closebrackets.min.js"></script>
+  <script src="./vendor/codemirror/5.43.0/addon/scroll/scrollpastend.min.js"></script>
+  <script src="./vendor/codemirror/5.43.0/addon/mode/simple.min.js"></script>
+  <script src="./vendor/codemirror/5.43.0/addon/fold/foldcode.min.js"></script>
+  <script src="./vendor/codemirror/5.43.0/addon/fold/foldgutter.min.js"></script>
+  <script src="./vendor/codemirror/5.43.0/addon/fold/brace-fold.min.js"></script>
+  <script src="./vendor/codemirror/5.43.0/addon/display/placeholder.min.js"></script>
   <script src="./events.js"></script>
   <script src="./jq.js"></script>
   <script src="./autocomplete.js"></script>
-  <link rel="stylesheet" href="./vendor/codemirror/5.39.2/codemirror.css">
-  <link rel="stylesheet" href="./vendor/codemirror/5.39.2/addon/fold/foldgutter.css" />
+  <link rel="stylesheet" href="./vendor/codemirror/5.43.0/codemirror.css">
+  <link rel="stylesheet" href="./vendor/codemirror/5.43.0/addon/fold/foldgutter.css" />
 
   <link rel="stylesheet" href="./style.css">
   <link rel="stylesheet" href="./theme.css">
@@ -52,7 +53,7 @@
 <body>
   <main>
     <div id="input">
-      <textarea placeholder="> jq query">.</textarea>
+      <textarea placeholder="> enter your `jq` query here"></textarea>
     </div>
     <div class="editors">
       <div id="source" class="editor">

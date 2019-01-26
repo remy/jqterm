@@ -7,8 +7,8 @@ const tmpdir = require('os').tmpdir();
 const share = require('./share');
 const examples = require('./examples.json');
 const Store = require('electron-store');
-const showAbout = require('./about');
 const prompt = require('./prompt');
+const { parseZoom } = require('./utils');
 
 const defaultSettings = {
   slurp: false,
@@ -65,14 +65,16 @@ const updateTheme = theme => () => {
 const updateZoom = factor => (menu, browserWindow) => {
   if (factor === 0) {
     store.set('zoom', 1);
+    console.log('resetting zoom');
     browserWindow.webContents.setZoomFactor(1);
     browserWindow.webContents.setZoomLevel(0);
     return;
   }
 
   browserWindow.webContents.getZoomFactor(zoom => {
-    let newZoom = zoom + factor;
+    let newZoom = parseZoom(zoom + factor);
     store.set('zoom', newZoom);
+    console.log('updating zoom to %s', newZoom);
     browserWindow.webContents.setZoomFactor(newZoom);
   });
 };
@@ -320,6 +322,12 @@ const template = [
           shell.openExternal('https://stedolan.github.io/jq/manual/');
         },
       },
+      {
+        label: 'Found an issue?',
+        click() {
+          shell.openExternal('https://github.com/remy/jace/issue/new/');
+        },
+      },
     ],
   },
 ];
@@ -329,8 +337,7 @@ if (process.platform === 'darwin') {
     label: app.getName(),
     submenu: [
       {
-        label: 'About',
-        click: async () => await showAbout(),
+        role: 'about',
       },
       { type: 'separator' },
       { role: 'hide' },
