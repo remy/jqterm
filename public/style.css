@@ -310,3 +310,8 @@ label input[type="checkbox"] {
 .theme-dark .editor .controls {
   background: rgba(0, 0,0, .1);
 }
+
+.CodeMirror .cm-url {
+  text-decoration: underline;
+  text-decoration-skip-ink: none;
+}

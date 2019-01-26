@@ -1,4 +1,6 @@
-/* global CodeMirror, jq, events, API, VERSION */
+/* eslint-env browser */
+
+/* global CodeMirror, jq, events, API, VERSION, hyperlinkOverlay */
 
 const $ = s => document.querySelector(s);
 const isApp = typeof process !== 'undefined';
@@ -83,7 +85,7 @@ const guid = (() => {
   return guid;
 })();
 
-function debounce(fn, delay) {
+window.debounce = function(fn, delay) {
   let timer = null;
   return (...args) => {
     clearTimeout(timer);
@@ -91,7 +93,7 @@ function debounce(fn, delay) {
       fn.apply(this, args);
     }, delay);
   };
-}
+};
 
 function getHash() {
   const query = encodeURIComponent(input.getValue()).replace(
@@ -161,13 +163,15 @@ const result = CodeMirror.fromTextArea($('#result textarea'), {
   gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
 });
 
+hyperlinkOverlay(result);
+
 const resultError = () => {
   result.setOption('mode', 'plain/text');
   result.setOption('lineWrapping', true);
 };
 
 const resultReset = () => {
-  result.setOption('mode', 'application/ld+json');
+  result.setOption('mode', config.raw ? null : 'application/ld+json');
   result.setOption('lineWrapping', false);
 };
 
@@ -263,7 +267,6 @@ $('#raw-input').onchange = function() {
 
 $('#raw').onchange = function() {
   config.raw = !!this.checked;
-  result.setOption('mode', config.raw ? 'text/plain' : 'application/ld+json');
   exec(input.getValue());
 };
 

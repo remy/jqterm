@@ -276,3 +276,34 @@
 }
 .theme-light .CodeMirror pre.CodeMirror-placeholder { color: #999; }
 .theme-dark .CodeMirror pre.CodeMirror-placeholder { color: #777; }
+
+.cm-tooltip {
+  padding: 2px 4px;
+  pointer-events: none;
+  margin: -10px 0 2px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.theme-light .CodeMirror-crosshair .cm-string.cm-url:hover,
+.theme-light .cm-string.cm-url.hover {
+  color: blue;
+  cursor: pointer;
+}
+
+.theme-dark .CodeMirror-crosshair .cm-string.cm-url:hover,
+.theme-dark .cm-string.cm-url.hover {
+  color: #4FC3F7;
+  cursor: pointer;
+}
+
+
+.theme-light .cm-tooltip {
+  border: 1px solid #ccc;
+  background: #eee;
+}
+
+.theme-dark .cm-tooltip {
+  border: 1px solid #000;
+  background: #222;
+  color: #eee;
+}
