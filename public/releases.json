@@ -1,0 +1,15 @@
+{
+  "currentRelease": "1.6.2",
+  "releases": [
+    {
+      "version": "1.6.2",
+      "updateTo": {
+        "version": "1.6.2",
+        "pub_date": "2019-01-26T12:29:53+01:00",
+        "notes": "First release of jqTerm",
+        "name": "1.6.2",
+        "url": "https://mycompany.example.com/myapp/releases/myrelease"
+      }
+    }
+  ]
+}

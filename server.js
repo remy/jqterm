@@ -134,7 +134,7 @@ app.put('/:id?', async (req, res) => {
     input = {
       version: VERSION,
       help: 'ctrl + shift + ?',
-      source: 'https://github.com/remy/jace',
+      macApp: 'https://gum.co/jqterm',
       credit: 'Remy Sharp / @rem',
       tip: ['Drag and drop .json files', 'in this panel to start querying'],
     };

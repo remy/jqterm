@@ -388,7 +388,7 @@ if (!isApp && window.location.pathname !== '/') {
           {
             version: VERSION,
             help: 'ctrl + shift + ?',
-            source: 'https://github.com/remy/jace',
+            macApp: 'https://gum.co/jqterm',
             credit: 'Remy Sharp / @rem',
             tip: [
               'Drag and drop .json files',
