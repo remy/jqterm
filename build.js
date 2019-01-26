@@ -1,8 +1,9 @@
 const fs = require('fs');
 const { stringified } = require('@remy/envy')();
 
-const filename = __dirname + '/public/client.js';
-let string = fs.readFileSync(filename, 'utf8');
+const source = __dirname + '/lib/config-template.js';
+const result = __dirname + '/public/config.js';
+let string = fs.readFileSync(source, 'utf8');
 
 const peKey = 'process.env';
 Object.keys(stringified[peKey]).forEach(key => {
@@ -14,4 +15,4 @@ Object.keys(stringified[peKey]).forEach(key => {
   }
 });
 
-fs.writeFileSync(filename, string);
+fs.writeFileSync(result, string);

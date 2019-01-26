@@ -21,6 +21,7 @@
   function emit(root, event) {
     if (isApp) {
       const electron = require('electron');
+
       let self;
       if (electron.BrowserWindow) {
         self = electron.BrowserWindow.getFocusedWindow();

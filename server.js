@@ -15,6 +15,8 @@ const {
 
 require('@remy/envy');
 
+const config = `const VERSION="${VERSION}"; const API="${process.env.API}"`;
+
 const request = require('request-promise-native').defaults({
   baseUrl: 'https://api.github.com/gists',
   json: true,
@@ -144,6 +146,11 @@ app.put('/:id?', async (req, res) => {
   });
 });
 
+app.use('/config.js', (req, res) => {
+  res.writeHeader(200, { 'content-type': 'application/javascript' });
+  res.end(config);
+});
+
 app.use('/', express.static('public'));
 
 app.get('/*', (req, res) => res.sendFile(__dirname + '/public/index.html'));
@@ -151,7 +158,8 @@ app.get('/*', (req, res) => res.sendFile(__dirname + '/public/index.html'));
 app.use(require('./error'));
 
 // listen for requests :)
-const listener = app.listen(process.env.PORT || 3000, () => {
-  console.log('Your app is listening on port ' + listener.address().port);
+const port = process.env.PORT || 3000;
+const listener = app.listen(port, () => {
+  console.log('running', port);
   process.env = {};
 });

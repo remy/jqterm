@@ -1,8 +1,15 @@
 const { Menu, app, dialog, shell } = require('electron');
 const fs = require('fs');
+const request = require('request');
+const { parse } = require('path');
+const URL = require('url').URL;
+const tmpdir = require('os').tmpdir();
 const share = require('./share');
 const examples = require('./examples.json');
 const Store = require('electron-store');
+const showAbout = require('./about');
+const prompt = require('./prompt');
+
 const defaultSettings = {
   slurp: false,
   raw: false,
@@ -106,13 +113,16 @@ const template = [
         accelerator: 'CommandOrControl+n',
         click: () => {
           const { makeNewWindow } = require('./window');
-          makeNewWindow();
+          makeNewWindow(true);
         },
       },
       {
-        label: 'New Empty',
+        label: 'Clone Window',
         accelerator: 'CommandOrControl+shift+n',
-        click: () => handler.createNew(),
+        click: () => {
+          const { makeNewWindow } = require('./window');
+          makeNewWindow();
+        },
       },
       { type: 'separator' },
       {
@@ -137,6 +147,35 @@ const template = [
               handler.openFiles(filePaths);
             }
           );
+        },
+      },
+      {
+        label: 'Open URL',
+        accelerator: 'CommandOrControl+u',
+        click: async () => {
+          const url = await prompt({
+            title: 'jqterm: load from URL',
+            label: 'Open URL:',
+            value: 'https://',
+            inputAttrs: {
+              type: 'url',
+            },
+          });
+
+          handler.toggleBusy(true);
+          const u = new URL(url);
+          const { base } = parse(u.pathname);
+          const filename = tmpdir + '/' + base;
+          request(url)
+            .pipe(fs.createWriteStream(filename))
+            .on('close', () => {
+              handler.openFiles([filename]);
+              handler.toggleBusy(false);
+            })
+            .on('error', error => {
+              console.log(error);
+              handler.toggleBusy(false);
+            });
         },
       },
       {
@@ -236,6 +275,14 @@ const template = [
           handler.hideSource(menu.checked);
         },
       },
+      {
+        label: 'Format Source',
+        accelerator: 'CommandOrControl+shift+f',
+        name: 'format-source',
+        click() {
+          handler.formatSource();
+        },
+      },
       { type: 'separator' },
       {
         label: 'Light Theme',
@@ -280,7 +327,10 @@ if (process.platform === 'darwin') {
   template.unshift({
     label: app.getName(),
     submenu: [
-      { role: 'about' },
+      {
+        label: 'About',
+        click: async () => await showAbout(),
+      },
       { type: 'separator' },
       { role: 'hide' },
       { role: 'hideothers' },

@@ -9,7 +9,9 @@ const Store = require('electron-store');
 const store = new Store();
 const cwd = (electron.app || electron.remote.app).getPath('userData');
 const lastFilename = path.resolve(cwd, 'last.json');
+
 let filename = store.has('filename') ? store.get('filename') : lastFilename;
+console.log('lastFilename: %s, filename: %s', lastFilename, filename);
 const writeFileAtomic = require('write-file-atomic');
 const makeDir = require('make-dir');
 const events = require('./events');
@@ -52,7 +54,7 @@ window.last = json;
 
 window.onbeforeunload = () => events.teardown();
 
-events.on('set/filename', ({ base, filename: _filename = null }) => {
+const setFilename = ({ base, filename: _filename = null }) => {
   store.set({ filename: _filename });
   if (!base) {
     window.titlePrefix = `Untitled`;
@@ -62,7 +64,9 @@ events.on('set/filename', ({ base, filename: _filename = null }) => {
   }
   window.titlePrefix = base;
   filename = _filename;
-});
+};
+
+events.on('set/filename', setFilename);
 
 events.on(`set/source`, ({ value }) => {
   Post(value);
@@ -119,7 +123,11 @@ function Put({ jq, query }) {
       try {
         JSON.parse(result);
         canParse = true;
-      } catch (e) {}
+      } catch (e) {
+        // console.log('failed to parse', e);
+      }
+
+      console.log(result, status);
 
       useFile = true;
       return {

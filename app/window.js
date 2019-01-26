@@ -5,15 +5,31 @@ const windowStateKeeper = require('electron-window-state');
 
 const store = new Store({ zoom: 1 });
 
+const delay = (fn, timeout) =>
+  new Promise(resolve => {
+    setTimeout(() => {
+      fn();
+      resolve();
+    }, timeout);
+  });
+
 const icon = nativeImage.createFromPath(join(__dirname, 'icon.png'));
 
-require('electron-context-menu')({
-  // prepend: (params, browserWindow) => [{}],
-});
+require('electron-context-menu')();
+// {
+//   prepend: (params, browserWindow) => {
+//     return [
+//       {
+//         label: 'Format Document',
+//         visible: true,
+//       },
+//     ];
+//   },
+// });
 
 const windows = new Set();
 
-function makeNewWindow() {
+function makeNewWindow(makeEmpty = false) {
   let mainWindowState = windowStateKeeper({
     defaultWidth: 1024,
     defaultHeight: 600,
@@ -59,27 +75,48 @@ function makeNewWindow() {
 
   return new Promise(resolve => {
     mainWindow.once('ready-to-show', () => {
-      // mainWindow.openDevTools();
-      const settings = store.get('settings');
-      const hideSource = store.get('hideSource');
-
-      if (settings) {
-        const handler = require('./handler');
-
-        handler.hideSource(hideSource);
-        handler.configChange(settings);
-
-        mainWindow.settings = settings;
-
-        setTimeout(() => {
-          mainWindow.show();
-          resolve();
-        }, hideSource ? 50 : 0);
-      } else {
-        mainWindow.show();
-        resolve();
+      let promise = Promise.resolve();
+      if (makeEmpty) {
+        promise = mainWindow.webContents.executeJavaScript(
+          `
+            input.setValue('.');
+            source.setValue('{}');
+            jq.sourceChange(source, input);
+            updateData('{}', true);
+            Post('{}')
+            setFilename({ base: false });
+            exec(input.getValue());
+          `
+        );
       }
+
+      resolve(promise);
     });
+  }).then(() => {
+    // mainWindow.openDevTools();
+    const settings = store.get('settings');
+    const hideSource = store.get('hideSource');
+
+    if (makeEmpty) {
+      settings.slurp = false;
+      settings.rawInput = false;
+      settings.raw = false;
+    }
+
+    if (settings) {
+      const handler = require('./handler');
+
+      mainWindow.settings = settings;
+      const timeout = hideSource ? 50 : 0;
+
+      return delay(() => {
+        handler.hideSource(hideSource);
+        mainWindow.show();
+        handler.configChange(settings);
+      }, timeout);
+    } else {
+      mainWindow.show();
+    }
   });
 }
 

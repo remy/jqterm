@@ -1,23 +1,11 @@
-/* global CodeMirror, jq, events */
+/* global CodeMirror, jq, events, API, VERSION */
+
 const $ = s => document.querySelector(s);
 const isApp = typeof process !== 'undefined';
 
+delete CodeMirror.keyMap['default']['Cmd-U'];
+
 if (!window.titlePrefix) window.titlePrefix = 'jqTerm';
-
-let API;
-let VERSION;
-
-if (typeof process === 'undefined') {
-  window.process = { env: {} };
-}
-
-if (process.env.API) {
-  API = process.env.API;
-  VERSION = process.env.VERSION;
-} else {
-  VERSION = 'local';
-  API = 'http://localhost:3100';
-}
 
 const root = document.documentElement;
 
@@ -218,6 +206,15 @@ const mirrors = {
       if (
         event.shiftKey &&
         (event.metaKey || event.ctrlKey) &&
+        event.keyCode == 70
+      ) {
+        events.emit('set/source-format');
+        event.preventDefault();
+      }
+
+      if (
+        event.shiftKey &&
+        (event.metaKey || event.ctrlKey) &&
         event.keyCode == 84
       ) {
         events.emit('set/source-hide', {
@@ -380,22 +377,27 @@ if (!isApp && window.location.pathname !== '/') {
       exec(input.getValue());
     });
 } else {
-  if (input.getValue() === '') input.setValue('.');
-  source.setValue(
-    window.last ||
-      JSON.stringify(
-        {
-          version: VERSION,
-          help: 'ctrl + shift + ?',
-          source: 'https://github.com/remy/jace',
-          credit: 'Remy Sharp / @rem',
-          tip: ['Drag and drop .json files', 'in this panel to start querying'],
-        },
-        '',
-        2
-      )
-  );
-  exec(input.getValue());
+  events.on('ready', () => {
+    if (input.getValue() === '') input.setValue('.');
+    source.setValue(
+      window.last ||
+        JSON.stringify(
+          {
+            version: VERSION,
+            help: 'ctrl + shift + ?',
+            source: 'https://github.com/remy/jace',
+            credit: 'Remy Sharp / @rem',
+            tip: [
+              'Drag and drop .json files',
+              'in this panel to start querying',
+            ],
+          },
+          '',
+          2
+        )
+    );
+    exec(input.getValue());
+  });
 }
 
 input.setCursor({ line: 0, ch: input.getValue().length });
@@ -425,6 +427,10 @@ events.on('set/source', ({ value }) => {
   source.setValue(value);
   jq.sourceChange(source, input);
   return updateData(value, true);
+});
+
+events.on('set/source-format', () => {
+  source.setValue(JSON.stringify(JSON.parse(source.getValue()), '', 2));
 });
 
 events.on('set/source-hide', ({ value }) => {

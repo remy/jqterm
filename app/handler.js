@@ -13,7 +13,7 @@ function setTheme(value) {
   events.emit('set/theme', { value });
 }
 
-function configChange(data, update = true) {
+function configChange(data) {
   if (BrowserWindow.getFocusedWindow()) {
     const settings = store.get('settings');
     BrowserWindow.getFocusedWindow().settings = { ...settings, ...data };
@@ -24,6 +24,10 @@ function configChange(data, update = true) {
 
 function toggleBusy(value) {
   events.emit('set/busy', { value });
+}
+
+function formatSource() {
+  events.emit('set/source-format');
 }
 
 function hideSource(value) {
@@ -129,4 +133,5 @@ module.exports = {
   toggleBusy: checkOpenWindow(toggleBusy),
   setTheme: checkOpenWindow(setTheme),
   load: checkOpenWindow(load),
+  formatSource: checkOpenWindow(formatSource),
 };

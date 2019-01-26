@@ -1,4 +1,5 @@
 {
   "name": "jqterm",
-  "alias": "jqterm.now.sh"
+  "alias": "jqterm.now.sh",
+  "version": 1
 }

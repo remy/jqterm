@@ -1,0 +1,103 @@
+body {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #333;
+  background-color: #fff;
+  padding: 16px;
+}
+
+#img {
+  max-width: 50%;
+  display: block;
+  margin: 0 auto;
+}
+
+#bug {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  font-size: 12px;
+}
+
+#bug a {
+  color: #ccc;
+}
+
+h1 {
+  text-align: center;
+  font-size: 24px;
+}
+
+h2 {
+  text-align: center;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+#container {
+  align-items: center;
+  justify-content: center;
+  /* display: flex; */
+  height: 100%;
+  overflow: auto;
+}
+
+#form {
+  width: 100%;
+}
+
+#label {
+  max-width: 100%;
+  max-height: 100%;
+  margin-bottom: 0.8em;
+  padding: 0 0.5em;
+  /* white-space: nowrap; */
+  /* overflow: hidden; */
+  /* text-overflow: ellipsis; */
+}
+
+#data {
+  border-radius: 2px;
+  background: #fff;
+  width: 90%;
+  padding: 0.4em 0.5em;
+  border: 1px solid #ccc;
+  min-height: 2em;
+  margin: 0 0 1.2em;
+  font-size: inherit;
+}
+
+select#data {
+  height: 2em;
+}
+
+#data-container {
+  text-align: center;
+}
+
+#buttons {
+  text-align: right;
+  padding: 0 0.5em 0 0;
+}
+
+#buttons > button {
+  border-radius: 2px;
+  border: 0;
+  margin: 0 0 0 0.5em;
+  font-size: 0.8em;
+  line-height: 1em;
+  padding: 0.6em 1em;
+}
+
+button {
+    cursor: pointer;
+}
+
+#ok {
+  background-color: #3879d9;
+  color: white;
+}
+
+#cancel {
+  background-color: #ddd;
+  color: black;
+}
