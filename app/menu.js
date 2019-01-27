@@ -167,8 +167,12 @@ const template = [
           handler.toggleBusy(true);
           const u = new URL(url);
           const { base } = parse(u.pathname);
-          const filename = tmpdir + '/' + base;
-          request(url)
+          const filename = tmpdir + '/' + base + '.json';
+          request(url, {
+            headers: {
+              'User-Agent': 'jqterm',
+            },
+          })
             .pipe(fs.createWriteStream(filename))
             .on('close', () => {
               handler.openFiles([filename]);
