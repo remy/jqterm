@@ -1,7 +1,7 @@
 {
   "name": "jqTerm",
   "productName": "jqTerm",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "A jq service",
   "main": "app",
   "scripts": {

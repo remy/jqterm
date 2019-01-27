@@ -139,7 +139,7 @@
   ];
 
   const jqMode = {
-    // The start state contains the rules that are intially used
+    // The start state contains the rules that are initially used
     start: [
       // The regex matches the token, the token property contains the type
       { regex: /"(?:[^\\]|\\.)*?(?:"|$)/, token: 'string' },
@@ -155,7 +155,7 @@
         regex: new RegExp(
           `\\b(?:${keywords
             .concat('def', 'if', 'elif', 'else', 'end', 'then', 'as')
-            .join('|')})(?![:.])`
+            .join('|')})(?![:.])\\b`
         ),
         token: 'keyword',
       },
