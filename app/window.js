@@ -26,7 +26,7 @@ function makeNewWindow(makeEmpty = false) {
     defaultHeight: 600,
   });
 
-  const zoomFactor = parseZoom(store.get('zoom'));
+  const zoomFactor = parseZoom(store.get('zoom') || 1);
 
   console.log('initing zoom to %s', zoomFactor);
 
