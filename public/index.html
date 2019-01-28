@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com 'unsafe-inline'; connect-src 'self' https://jqterm.now.sh" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' https://www.googletagmanager.com 'unsafe-inline'; object-src 'self'; connect-src 'self' https://jqterm.now.sh" />
 
   <title>jqterm: jq as a service</title>
   <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
@@ -38,6 +38,9 @@
     if (typeof process !== 'undefined') {
       document.documentElement.classList.add("is-app");
     } else {
+      var wasmScript = document.createElement('script');
+      wasmScript.src = './vendor/jq/jq.wasm.js';
+      document.head.appendChild(wasmScript);
       const ga = document.getElementById('ga');
       const ext = document.createElement('script');
       ext.async = true;
@@ -88,7 +91,7 @@
     }
   </script>
   <script src="./config.js"></script>
-  <script src="./client.js"></script>
+  <script defer src="./client.js"></script>
   <div id="help">
     <div>
       <ul>

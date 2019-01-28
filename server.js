@@ -13,6 +13,8 @@ const {
   writeToFile,
 } = require('./lib/');
 
+express.static.mime.types['wasm'] = 'application/wasm';
+
 require('@remy/envy');
 
 const config = `const VERSION="${VERSION}"; const API="${process.env.API}"`;

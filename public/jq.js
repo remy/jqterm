@@ -204,7 +204,7 @@
     }, []);
   }
 
-  window.jq = {
+  window.jqTools = {
     jqMode,
     sourceChange,
     keywords,

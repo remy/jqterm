@@ -1,6 +1,6 @@
 /* eslint-env browser */
 
-/* global CodeMirror, jq, events, API, VERSION, hyperlinkOverlay */
+/* global CodeMirror, jq, jqTools, events, API, VERSION, hyperlinkOverlay, debounce */
 
 const $ = s => document.querySelector(s);
 const isApp = typeof process !== 'undefined';
@@ -10,6 +10,21 @@ delete CodeMirror.keyMap['default']['Cmd-U'];
 if (!window.titlePrefix) window.titlePrefix = 'jqTerm';
 
 const root = document.documentElement;
+
+let useWASM = false;
+
+if (!isApp) {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js');
+  }
+  wasmScript.onload = () => {
+    jq.onInitialized.addListener(() => {
+      console.log('wasm ready');
+
+      useWASM = true;
+    });
+  };
+}
 
 const config = {
   raw: false,
@@ -141,7 +156,7 @@ function readHash() {
   }
 }
 
-CodeMirror.defineSimpleMode('jq', jq.jqMode);
+CodeMirror.defineSimpleMode('jq', jqTools.jqMode);
 
 const source = CodeMirror.fromTextArea($('#source textarea'), {
   lineNumbers: true,
@@ -179,7 +194,7 @@ const input = CodeMirror.fromTextArea($('#input textarea'), {
   mode: 'jq',
   autoCloseBrackets: true,
   autocomplete: true,
-  keywords: jq.keywords,
+  keywords: jqTools.keywords,
   autofocus: true,
   lineWrapping: true,
 });
@@ -275,7 +290,7 @@ source.on('drop', cm => {
 });
 
 const sourceChange = async (cm, event) => {
-  jq.sourceChange(cm, input); // update autocomplete keywords
+  jqTools.sourceChange(cm, input); // update autocomplete keywords
 
   if (event.origin !== 'setValue') {
     await updateData(cm.getValue());
@@ -306,34 +321,45 @@ async function exec(body, reRequest = false) {
   // if (!id) return;
   window.history.replaceState(null, id, getHash());
 
-  const res = await fetch(
-    `${API}/${id}?guid=${guid}&slurp=${config.slurp}&raw=${
-      config.raw
-    }&raw-input=${config.rawInput}&_method=PUT`,
-    {
-      method: 'put',
-      body,
-      headers: {
-        'content-type': 'text/plain',
+  let res = null;
+
+  if (!isApp && useWASM && !config.raw && !config.rawInput && !config.slurp) {
+    res = {
+      json() {
+        return jq.promised
+          .json(JSON.parse(source.getValue()), body)
+          .then(res => JSON.stringify(res, 0, 2));
       },
-    }
-  );
-
-  if (res.status !== 200) {
-    const json = await res.json();
-
-    if (res.status === 404) {
-      result.setValue('Record not found: resubmitting');
-      if (!reRequest) {
-        // exec(body, true);
+    };
+  } else {
+    res = await fetch(
+      `${API}/${id}?guid=${guid}&slurp=${config.slurp}&raw=${
+        config.raw
+      }&raw-input=${config.rawInput}&_method=PUT`,
+      {
+        method: 'put',
+        body,
+        headers: {
+          'content-type': 'text/plain',
+        },
       }
+    );
+
+    if (res.status !== 200) {
+      const json = await res.json();
+      if (res.status === 404) {
+        result.setValue('Record not found: resubmitting');
+        if (!reRequest) {
+          // exec(body, true);
+        }
+        return;
+      }
+      resultError();
+      window.last = json;
+      result.setValue(json.error);
+      setTitle(config);
       return;
     }
-    resultError();
-    window.last = json;
-    result.setValue(json.error);
-    setTitle(config);
-    return;
   }
 
   resultReset();
@@ -347,7 +373,6 @@ async function exec(body, reRequest = false) {
       output = json
         .split('\n')
         .map(_ => JSON.parse(_))
-        // .map(_ => _.replace(/^"(.*)"$/, '$1').replace(/\\{2}/g, '\\'))
         .join('\n');
     } catch (error) {
       console.log(error);
@@ -428,7 +453,7 @@ events.on('set/theme', ({ value }) => {
 events.on('set/input', ({ value }) => input.setValue(value));
 events.on('set/source', ({ value }) => {
   source.setValue(value);
-  jq.sourceChange(source, input);
+  jqTools.sourceChange(source, input);
   return updateData(value, true);
 });
 
