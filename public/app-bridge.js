@@ -127,7 +127,7 @@ function Put({ jq, query }) {
         // console.log('failed to parse', e);
       }
 
-      console.log(result, status);
+      // console.log(result, status);
 
       useFile = true;
       return {

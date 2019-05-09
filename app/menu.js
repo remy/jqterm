@@ -1,4 +1,4 @@
-const { Menu, app, dialog, shell } = require('electron');
+const { Menu, app, dialog, shell, ipcMain } = require('electron');
 const fs = require('fs');
 const request = require('request');
 const { parse } = require('path');
@@ -8,7 +8,6 @@ const share = require('./share');
 const examples = require('./examples.json');
 const Store = require('electron-store');
 const prompt = require('./prompt');
-const { parseZoom } = require('./utils');
 
 const defaultSettings = {
   slurp: false,
@@ -62,26 +61,16 @@ const updateTheme = theme => () => {
   handler.setTheme(theme);
 };
 
-const updateZoom = factor => (menu, browserWindow) => {
-  if (factor === 0) {
-    store.set('zoom', 1);
-    console.log('resetting zoom');
-    browserWindow.webContents.setZoomFactor(1);
-    browserWindow.webContents.setZoomLevel(0);
-    return;
-  }
-
-  browserWindow.webContents.getZoomFactor(zoom => {
-    let newZoom = parseZoom(zoom + factor);
-    store.set('zoom', newZoom);
-    console.log('updating zoom to %s', newZoom);
-    browserWindow.webContents.setZoomFactor(newZoom);
-  });
-};
-
 app.on('open-file', (event, file) => {
   event.preventDefault();
   handler.openFiles([file]);
+});
+
+ipcMain.on('open-file', (event, files) => {
+  console.log('ipcMain');
+  console.log(files);
+
+  handler.openFiles(files);
 });
 
 const updateConfig = menu => {
@@ -306,11 +295,16 @@ const template = [
         checked: store.get('theme') === 'dark',
       },
       { type: 'separator' },
-      { label: 'Actual Size', accelerator: 'Command+0', click: updateZoom(0) },
-      { label: 'Zoom In', accelerator: 'Command+plus', click: updateZoom(0.1) },
-      { label: 'Zoom Out', accelerator: 'Command+-', click: updateZoom(-0.1) },
+      { label: 'Zoom', name: 'zoom', enabled: false },
+      { role: 'resetzoom' },
+      { role: 'zoomin' },
+      { role: 'zoomout' },
+      // { label: 'Actual Size', accelerator: 'Command+0', click: updateZoom(0) },
+      // { label: 'Zoom In', accelerator: 'Command+plus', click: updateZoom(0.1) },
+      // { label: 'Zoom Out', accelerator: 'Command+-', click: updateZoom(-0.1) },
       { type: 'separator' },
       { role: 'togglefullscreen' },
+      { role: 'toggledevtools', accelerator: 'Command+Option+i' },
     ],
   },
   {

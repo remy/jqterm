@@ -1,6 +1,6 @@
 // we'll version our cache (and learn how to delete caches in
 // some other post)
-const cacheName = 'v2';
+const cacheName = 'v3';
 
 self.addEventListener('install', e => {
   // once the SW is installed, go ahead and fetch the resources
@@ -23,8 +23,10 @@ self.addEventListener('install', e => {
           '/events.js',
           '/jq.js',
           '/autocomplete.js',
-          '/vendor/jq/jq.wasm.wasm',
-          '/vendor/jq/jq.wasm.js',
+          '/vendor/jq/jq.wasm',
+          '/vendor/jq/jq.js',
+          '/vendor/jq/jq.worker.js',
+          '/vendor/workerize.js',
           '/config.js',
           '/client.js',
           '/favicon-32x32.png',

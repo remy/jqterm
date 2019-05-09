@@ -18,11 +18,10 @@ if (!isApp) {
     navigator.serviceWorker.register('/sw.js');
   }
   wasmScript.onload = () => {
-    jq.onInitialized.addListener(() => {
+    jq.onInitialized = () => {
       console.log('wasm ready');
-
       useWASM = true;
-    });
+    };
   };
 }
 
@@ -224,6 +223,26 @@ const mirrors = {
 
       if (
         event.shiftKey &&
+        event.shiftKey &&
+        (event.metaKey || event.ctrlKey) &&
+        event.keyCode == 68
+      ) {
+        // D
+        let theme = 'dark';
+        if (root.classList.contains('theme-dark')) {
+          root.classList.remove('theme-dark');
+          theme = 'light';
+        } else {
+          root.classList.remove('theme-light');
+        }
+        root.classList.add(`theme-${theme}`);
+        localStorage.setItem('theme', theme);
+
+        event.preventDefault();
+      }
+
+      if (
+        event.shiftKey &&
         (event.metaKey || event.ctrlKey) &&
         event.keyCode == 70
       ) {
@@ -293,8 +312,12 @@ const sourceChange = async (cm, event) => {
   jqTools.sourceChange(cm, input); // update autocomplete keywords
 
   if (event.origin !== 'setValue') {
-    await updateData(cm.getValue());
-    await exec(input.getValue());
+    if (useWASM) {
+      updateData(cm.getValue());
+    } else {
+      await updateData(cm.getValue());
+    }
+    exec(input.getValue());
   }
 };
 
@@ -323,14 +346,17 @@ async function exec(body, reRequest = false) {
 
   let res = null;
 
-  if (!isApp && useWASM && !config.raw && !config.rawInput && !config.slurp) {
+  if (!isApp && useWASM) {
+    // && !config.raw && !config.rawInput && !config.slurp
     res = {
       json() {
-        return jq.promised
-          .json(JSON.parse(source.getValue()), body)
-          .then(res => JSON.stringify(res, 0, 2));
+        const args = [];
+        if (config.slurp) args.push('-s');
+        if (config.rawInput) args.push('-R');
+        return jq(source.getValue(), body, args);
       },
     };
+    res.status = 200;
   } else {
     res = await fetch(
       `${API}/${id}?guid=${guid}&slurp=${config.slurp}&raw=${
@@ -344,22 +370,22 @@ async function exec(body, reRequest = false) {
         },
       }
     );
+  }
 
-    if (res.status !== 200) {
-      const json = await res.json();
-      if (res.status === 404) {
-        result.setValue('Record not found: resubmitting');
-        if (!reRequest) {
-          // exec(body, true);
-        }
-        return;
+  if (res.status !== 200) {
+    const json = await res.json();
+    if (res.status === 404) {
+      result.setValue('Record not found: resubmitting');
+      if (!reRequest) {
+        // exec(body, true);
       }
-      resultError();
-      window.last = json;
-      result.setValue(json.error);
-      setTitle(config);
       return;
     }
+    resultError();
+    window.last = json;
+    result.setValue(json.error);
+    setTitle(config);
+    return;
   }
 
   resultReset();
@@ -481,3 +507,8 @@ events.on('set/busy', ({ value }) => {
 });
 
 events.emit('ready');
+
+if (!isApp) {
+  const value = localStorage.getItem('theme');
+  events.emit('set/theme', { value });
+}

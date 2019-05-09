@@ -2,9 +2,8 @@ const { app, BrowserWindow, nativeImage } = require('electron');
 const join = require('path').join;
 const Store = require('electron-store');
 const windowStateKeeper = require('electron-window-state');
-const { parseZoom } = require('./utils');
 
-const store = new Store({ zoom: 1 });
+const store = new Store({});
 
 const delay = (fn, timeout) =>
   new Promise(resolve => {
@@ -26,10 +25,6 @@ function makeNewWindow(makeEmpty = false) {
     defaultHeight: 600,
   });
 
-  const zoomFactor = parseZoom(store.get('zoom') || 1);
-
-  console.log('initing zoom to %s', zoomFactor);
-
   let mainWindow = new BrowserWindow({
     height: mainWindowState.height,
     width: mainWindowState.width,
@@ -38,8 +33,9 @@ function makeNewWindow(makeEmpty = false) {
     show: false,
     title: `#${windows.size}`,
     webPreferences: {
-      zoomFactor,
-      zoomLevel: 0,
+      // zoomFactor: 1,
+      // zoomLevel: 0,
+      nodeIntegration: true,
     },
     icon,
   });

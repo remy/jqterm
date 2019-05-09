@@ -1,7 +1,7 @@
-const events = require('../public/events');
+const { ipcRenderer } = require('electron');
 const holder = document.documentElement;
 
-// override codemirror's functionality
+// override CodeMirror's functionality
 holder.addEventListener('dragover', () => false, true);
 holder.addEventListener('dragleave', () => false, true);
 holder.addEventListener('dragend', () => false, true);
@@ -16,7 +16,7 @@ holder.addEventListener(
       files.push(f.path);
     }
 
-    events.emit('open-files', files);
+    ipcRenderer.send('open-file', files);
   },
   true
 );
