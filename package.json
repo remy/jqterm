@@ -1,7 +1,7 @@
 {
   "name": "jqTerm",
   "productName": "jqTerm",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "A jq service",
   "main": "app",
   "scripts": {
@@ -39,7 +39,7 @@
     "write-file-atomic": "^2.3.0"
   },
   "engines": {
-    "node": "^8.10.1"
+    "node": "10"
   },
   "build": {
     "fileAssociations": [

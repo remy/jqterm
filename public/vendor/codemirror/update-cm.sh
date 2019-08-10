@@ -1,4 +1,4 @@
-VERSION=5.43.0
+VERSION=5.48.2
 
 ROOT=$(pwd)/$VERSION
 

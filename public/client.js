@@ -1,6 +1,6 @@
 /* eslint-env browser */
 
-/* global CodeMirror, jq, jqTools, events, API, VERSION, hyperlinkOverlay, debounce */
+/* global wasmScript, CodeMirror, jq, jqTools, events, API, VERSION, hyperlinkOverlay, debounce */
 
 const $ = s => document.querySelector(s);
 const isApp = typeof process !== 'undefined';
@@ -163,6 +163,7 @@ const source = CodeMirror.fromTextArea($('#source textarea'), {
   scrollPastEnd: true,
   autoCloseBrackets: true,
   foldGutter: true,
+  lineWrapping: true,
   foldOptions: { widget: '\u00AB\u00BB' },
   gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
 });
@@ -208,7 +209,7 @@ const mirrors = {
   root.addEventListener(
     'keydown',
     event => {
-      if (id && event.keyCode === 83 && (event.metaKey || event.ctrlKey)) {
+      if (id && event.code === 'KeyS' && (event.metaKey || event.ctrlKey)) {
         // save
         const blob = new Blob([result.getValue() || ''], {
           type: 'application/json',
@@ -225,7 +226,7 @@ const mirrors = {
         event.shiftKey &&
         event.shiftKey &&
         (event.metaKey || event.ctrlKey) &&
-        event.keyCode == 68
+        event.code == 'KeyD'
       ) {
         // D
         let theme = 'dark';
@@ -244,7 +245,7 @@ const mirrors = {
       if (
         event.shiftKey &&
         (event.metaKey || event.ctrlKey) &&
-        event.keyCode == 70
+        event.code === 'KeyF'
       ) {
         events.emit('set/source-format');
         event.preventDefault();
@@ -253,7 +254,7 @@ const mirrors = {
       if (
         event.shiftKey &&
         (event.metaKey || event.ctrlKey) &&
-        event.keyCode == 84
+        event.code === 'KeyT'
       ) {
         events.emit('set/source-hide', {
           value: !root.classList.contains('hidden-source'),
@@ -275,7 +276,7 @@ const mirrors = {
         );
       }
 
-      if (event.keyCode === 27) {
+      if (event.code === 'Escape') {
         root.classList.remove('help');
       }
     },
