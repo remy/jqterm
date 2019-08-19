@@ -6,6 +6,22 @@
   box-sizing: border-box;
 }
 
+:root {
+  --c-bg: white;
+  --c-object-bg: rgb(238, 238, 238);
+  --c-t-color: black;
+  --c-a-color: rgb(2, 119, 189);
+  --c-border-color: rgb(204, 204, 204);
+}
+
+:root.theme-dark {
+  --c-bg: #121212;
+  --c-t-color: #eee;
+  --c-object-bg: rgb(58, 58, 58);
+  --c-a-color: rgb(22, 168, 255);
+  --c-border-color: rgb(0,0,0);
+}
+
 body,
 html,
 main {
@@ -27,6 +43,10 @@ label {
   user-select: none !important;
 }
 
+a {
+  color: rgb(22, 168, 255);
+}
+
 .CodeMirror {
   /* padding: 5px 0; */
   display: block;
@@ -45,7 +65,7 @@ label {
 }
 
 textarea:focus {
-  background: white;
+  background: var(--c-bg);
 }
 
 #input {
@@ -166,6 +186,7 @@ main .editors > div {
   flex-direction: row;
   align-items: center;
   height: 100%;
+  color: var(--c-t-color);
 }
 
 .help main {
@@ -184,13 +205,14 @@ main .editors > div {
 }
 
 #help > * {
-  background: white;
+  background: var(--c-bg);
   width: 80%;
   margin: 0 auto;
   font-size: 200%;
   padding: 20px;
-  border: 3px solid #ccc;
+  border: 3px solid var(--c-border-color);
   border-radius: 3px;
+  box-shadow: 0px 6px 20px 2px var(--c-border-color);
 }
 
 #help * {
@@ -206,7 +228,7 @@ main .editors > div {
 
 #help kbd {
   font-size: 1rem;
-  background: #eee;
+  background: var(--c-object-bg);
   border-radius: 2px;
 }
 
@@ -224,7 +246,7 @@ kbd.combo > kbd,
 kbd {
   padding: 5px;
   border-radius: 3px;
-  background: rgb(243, 243, 243);
+  background: var(--c-object-bg);
   /* border: 2px solid #fff; */
 }
 
@@ -314,7 +336,7 @@ kbd.symbol {
   top: 20px;
   right: 10px;
   z-index: 10;
-  background: white;
+  background: var(--c-bg);
   opacity: 0.9;
 }
 
@@ -349,7 +371,7 @@ label input[type="checkbox"] {
 }
 
 .CodeMirror.CodeMirror-focused {
-  background: white;
+  background: vra(--c-bg);
 }
 
 .is-app .editor .controls {
@@ -358,6 +380,10 @@ label input[type="checkbox"] {
 
 .theme-dark .editor .controls {
   background: none;
+}
+
+.theme-dark body {
+  background: black;
 }
 
 .CodeMirror .cm-url {

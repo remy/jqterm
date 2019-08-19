@@ -1,5 +1,6 @@
 {
   "name": "jqterm",
   "alias": "jqterm.now.sh",
-  "version": 1
+  "version": 1,
+  "dotenv": ".env"
 }

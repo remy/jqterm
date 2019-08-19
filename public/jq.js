@@ -191,7 +191,7 @@
     'y0',
     'y1',
     'yn',
-  ].concat(['if', 'then', 'else', 'elif', 'end']); // missing from builtins
+  ].concat(['if', 'then', 'else', 'elif', 'end', 'reduce']); // missing from builtins
 
   const jqMode = {
     // The start state contains the rules that are initially used
