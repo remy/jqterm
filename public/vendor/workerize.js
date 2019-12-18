@@ -10,7 +10,16 @@
     return new Promise((resolve, reject) => {
       callbacks[id] = [
         res => {
+          const err = (res.stderr || '')
+            .trim()
+            .split('\n')
+            .filter(_ => !_.startsWith('exit(0)') && _ != 'undefined');
+
           if (res.stdout) {
+            if (err.length) {
+              // yes a string…
+              return resolve(err.toString() + '\n' + res.stdout);
+            }
             return resolve(res.stdout);
           }
 
