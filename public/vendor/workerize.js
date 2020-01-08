@@ -10,13 +10,14 @@
     return new Promise((resolve, reject) => {
       callbacks[id] = [
         res => {
+          console.log({ res });
           const err = (res.stderr || '')
             .trim()
             .split('\n')
             .filter(_ => !_.startsWith('exit(0)') && _ != 'undefined');
 
-          if (res.stdout) {
-            if (err.length) {
+          if (res.stdout !== null) {
+            if (res.stderr && err.length) {
               // yes a string…
               return resolve(err.toString() + '\n' + res.stdout);
             }
@@ -27,6 +28,8 @@
         },
         reject,
       ];
+      console.log(params);
+
       worker.postMessage({ type: RPC, id, method: 'jq', params });
     });
   };
