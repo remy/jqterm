@@ -63,8 +63,6 @@
     }
 
     on(name, callback) {
-      console.log('on(%s)', name);
-
       if (typeof callback !== 'function') {
         throw new Error('.on requires a callback');
       }
@@ -81,7 +79,7 @@
     }
 
     emit(name, data, callback) {
-      console.log('emit(%s)', name);
+      // console.log('emit(%s)', name);
 
       return new Promise(resolve => {
         if (!callback) {

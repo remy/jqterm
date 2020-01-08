@@ -15,7 +15,7 @@ let useWASM = false;
 
 if (!isApp) {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js');
+    // navigator.serviceWorker.register('/sw.js');
   }
   wasmScript.onload = () => {
     jq.onInitialized = () => {
@@ -35,7 +35,7 @@ let id = '';
 
 const setTitle = config => {
   let title = null;
-  if (window.last.error) {
+  if (window.last && window.last.error) {
     title = `error`;
   }
 
@@ -59,7 +59,7 @@ const setTitle = config => {
       }
       // window.last = res;
     } catch (e) {
-      console.log(e);
+      // console.log(e);
       title = 'non JSON';
     }
   }
@@ -215,11 +215,21 @@ const mirrors = {
           type: 'application/json',
         });
         const anchor = document.createElement('a');
-        anchor.download = `${id}.json`;
+        anchor.download = `${id}.${config.raw ? 'txt' : 'json'}`;
         anchor.href = URL.createObjectURL(blob);
         anchor.click();
         event.preventDefault();
         return;
+      }
+
+      if (
+        event.shiftKey &&
+        event.shiftKey &&
+        (event.metaKey || event.ctrlKey) &&
+        event.code == 'KeyN'
+      ) {
+        event.preventDefault();
+        window.location = '/';
       }
 
       if (
@@ -297,11 +307,16 @@ $('#slurp').onchange = function() {
 
 $('#raw-input').onchange = function() {
   config.rawInput = !!this.checked;
+  source.setOption(
+    'mode',
+    config.rawInput ? 'text/plain' : 'application/ld+json'
+  );
   exec(input.getValue());
 };
 
 $('#raw').onchange = function() {
   config.raw = !!this.checked;
+  source.setOption('mode', config.raw ? 'text/plain' : 'application/ld+json');
   exec(input.getValue());
 };
 
@@ -426,7 +441,7 @@ if (!isApp && window.location.pathname !== '/') {
       try {
         source.setValue(JSON.stringify(JSON.parse(json.payload), '', 2));
       } catch (e) {
-        console.log(e);
+        // console.log(e);
         source.setValue(json.payload);
       }
       exec(input.getValue());
@@ -510,6 +525,6 @@ events.on('set/busy', ({ value }) => {
 events.emit('ready');
 
 if (!isApp) {
-  const value = localStorage.getItem('theme');
+  const value = localStorage.getItem('theme') || 'light';
   events.emit('set/theme', { value });
 }
