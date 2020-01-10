@@ -1,0 +1,14 @@
+{
+  "lang": "en",
+  "short_name": "jqTerm",
+  "name": "jqTerm",
+  "icons": [
+    {
+      "src": "/favicon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone"
+}

@@ -15,7 +15,7 @@ let useWASM = false;
 
 if (!isApp) {
   if ('serviceWorker' in navigator) {
-    // navigator.serviceWorker.register('/sw.js');
+    navigator.serviceWorker.register('/sw.js');
   }
   wasmScript.onload = () => {
     jq.onInitialized = () => {

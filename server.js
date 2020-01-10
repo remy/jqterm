@@ -38,6 +38,10 @@ app.use(cors());
 app.use(bodyParser.text({ type: '*/*', limit: '50mb' }));
 app.set('json spaces', 2);
 
+app.get('/manifest.json', (req, res) =>
+  res.sendFile(__dirname + '/public/manifest.json')
+);
+
 app.get('/:id.json', async (req, res, next) => {
   const { id } = req.params;
   const path = `${getFilename(id)}.json`;
