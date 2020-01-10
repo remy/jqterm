@@ -1,9 +1,8 @@
 /* eslint-env serviceworker */
 
-
 // we'll version our cache (and learn how to delete caches in
 // some other post)
-const cacheName = 'v3.2';
+const cacheName = 'v3.3';
 
 self.addEventListener('install', e => {
   // once the SW is installed, go ahead and fetch the resources
@@ -38,6 +37,7 @@ self.addEventListener('install', e => {
           '/vendor/codemirror/5.48.2/addon/fold/foldgutter.css',
           '/style.css',
           '/theme.css',
+          '/manifest.json',
         ])
         .then(() => self.skipWaiting());
     })
