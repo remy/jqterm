@@ -1,7 +1,7 @@
 {
   "name": "jqTerm",
   "productName": "jqTerm",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "A jq service",
   "main": "app",
   "scripts": {
@@ -10,7 +10,7 @@
     "dev": "nodemon server.js -i dist -i public -e js -V",
     "package": "electron-builder --dir",
     "build": "VERSION=$npm_package_version node ./build.js",
-    "deploy": "now -E .env && now alias"
+    "deploy": "now && now alias"
   },
   "dependencies": {
     "@remy/envy": "^4.0.2",
