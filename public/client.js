@@ -2,8 +2,9 @@
 
 /* global wasmScript, CodeMirror, jq, jqTools, events, API, VERSION, hyperlinkOverlay, debounce */
 
-const $ = s => document.querySelector(s);
+const $ = (s) => document.querySelector(s);
 const isApp = typeof process !== 'undefined';
+const gistId = getGistId(window.location.toString());
 
 delete CodeMirror.keyMap['default']['Cmd-U'];
 
@@ -33,7 +34,7 @@ const config = {
 
 let id = '';
 
-const setTitle = config => {
+const setTitle = (config) => {
   let title = null;
   if (window.last && window.last.error) {
     title = `error`;
@@ -99,7 +100,7 @@ const guid = (() => {
   return guid;
 })();
 
-window.debounce = function(fn, delay) {
+window.debounce = function (fn, delay) {
   let timer = null;
   return (...args) => {
     clearTimeout(timer);
@@ -109,13 +110,46 @@ window.debounce = function(fn, delay) {
   };
 };
 
+function loadGist() {
+  const id = getGistId(window.location.toString());
+  return fetch(`https://api.github.com/gists/${id}`)
+    .then((res) => res.json())
+    .then((json) => {
+      const file = Object.keys(json.files).map((key) => json.files[key])[0];
+
+      if (file) {
+        if (file.truncated) {
+          return fetch(file.raw_url).then((res) => res.text());
+        }
+        return file.content;
+      }
+    });
+}
+
+function getGistId(_url) {
+  const u = new URL(_url);
+  const gist = u.searchParams.get('gist');
+
+  let value = gist || null;
+
+  if (value && value.includes('github')) {
+    value = value.split('/').pop();
+  }
+
+  return value;
+}
+
 function getHash() {
   const query = encodeURIComponent(input.getValue()).replace(
     /[()]/g,
-    c => ({ '(': '%28', ')': '%29' }[c])
+    (c) => ({ '(': '%28', ')': '%29' }[c])
   );
 
   let url = `/${id}?query=${query}`;
+
+  if (gistId) {
+    url += `&gist=${gistId}`;
+  }
 
   if (config.slurp) {
     url += '&slurp=true';
@@ -208,7 +242,7 @@ const mirrors = {
 !isApp &&
   root.addEventListener(
     'keydown',
-    event => {
+    (event) => {
       if (id && event.code === 'KeyS' && (event.metaKey || event.ctrlKey)) {
         // save
         const blob = new Blob([result.getValue() || ''], {
@@ -282,7 +316,7 @@ const mirrors = {
         event.preventDefault();
         $('#help').addEventListener(
           'click',
-          event => event.target.id === 'help' && root.classList.remove('help')
+          (event) => event.target.id === 'help' && root.classList.remove('help')
         );
       }
 
@@ -300,12 +334,12 @@ const inputChange = (cm, event) => {
 };
 input.on('change', isApp ? inputChange : debounce(inputChange, 500));
 
-$('#slurp').onchange = function() {
+$('#slurp').onchange = function () {
   config.slurp = !!this.checked;
   exec(input.getValue());
 };
 
-$('#raw-input').onchange = function() {
+$('#raw-input').onchange = function () {
   config.rawInput = !!this.checked;
   source.setOption(
     'mode',
@@ -314,13 +348,13 @@ $('#raw-input').onchange = function() {
   exec(input.getValue());
 };
 
-$('#raw').onchange = function() {
+$('#raw').onchange = function () {
   config.raw = !!this.checked;
   source.setOption('mode', config.raw ? 'text/plain' : 'application/ld+json');
   exec(input.getValue());
 };
 
-source.on('drop', cm => {
+source.on('drop', (cm) => {
   cm.setValue('');
 });
 
@@ -375,9 +409,7 @@ async function exec(body, reRequest = false) {
     res.status = 200;
   } else {
     res = await fetch(
-      `${API}/${id}?guid=${guid}&slurp=${config.slurp}&raw=${
-        config.raw
-      }&raw-input=${config.rawInput}&_method=PUT`,
+      `${API}/${id}?guid=${guid}&slurp=${config.slurp}&raw=${config.raw}&raw-input=${config.rawInput}&_method=PUT`,
       {
         method: 'put',
         body,
@@ -414,7 +446,7 @@ async function exec(body, reRequest = false) {
     try {
       output = json
         .split('\n')
-        .map(_ => JSON.parse(_))
+        .map((_) => JSON.parse(_))
         .join('\n');
     } catch (error) {
       console.log(error);
@@ -432,8 +464,8 @@ if (window.location.hash.indexOf('#!/') === 0) {
 if (!isApp && window.location.pathname !== '/') {
   readHash();
   fetch(`${API}/${id}.json`)
-    .then(res => res.json())
-    .then(json => {
+    .then((res) => res.json())
+    .then((json) => {
       if (json.id !== id) {
         id = json.id;
         window.history.replaceState(null, id, getHash());
@@ -446,6 +478,17 @@ if (!isApp && window.location.pathname !== '/') {
       }
       exec(input.getValue());
     });
+} else if (gistId) {
+  loadGist().then((json) => {
+    try {
+      source.setValue(JSON.stringify(JSON.parse(json), '', 2));
+    } catch (e) {
+      // console.log(e);
+      source.setValue(json);
+    }
+    if (input.getValue() === '') input.setValue('.');
+    exec(input.getValue());
+  });
 } else {
   events.on('ready', () => {
     if (input.getValue() === '') input.setValue('.');
@@ -473,8 +516,8 @@ if (!isApp && window.location.pathname !== '/') {
 input.setCursor({ line: 0, ch: input.getValue().length });
 
 // setup event handling
-events.on('set/config', data => {
-  Object.keys(config).forEach(key => {
+events.on('set/config', (data) => {
+  Object.keys(config).forEach((key) => {
     if (data.hasOwnProperty(key)) {
       config[key] = data[key];
     }
