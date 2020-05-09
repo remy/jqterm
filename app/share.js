@@ -7,13 +7,13 @@ const guid = machineIdSync();
 
 function share(config) {
   handler.toggleBusy(true);
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     handler.getSource({
       panel: 'source',
-      callback: body => {
+      callback: (body) => {
         request(
           {
-            url: 'https://jqterm.now.sh',
+            url: 'https://remy-jqterm.glitch.me',
             headers: {
               'content-type': 'text/plain',
             },
@@ -30,10 +30,10 @@ function share(config) {
               const id = body.id;
               handler.getSource({
                 panel: 'input',
-                callback: input => {
+                callback: (input) => {
                   const query = encodeURIComponent(input).replace(
                     /[()]/g,
-                    c => ({ '(': '%28', ')': '%29' }[c])
+                    (c) => ({ '(': '%28', ')': '%29' }[c])
                   );
 
                   let url = `https://jqterm.com/${id}?query=${query}`;

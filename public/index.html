@@ -1,119 +1,119 @@
 <!DOCTYPE html>
 <html class="theme-light">
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
-  <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; worker-src 'unsafe-eval'; script-src 'self' 'unsafe-eval' https://www.googletagmanager.com 'unsafe-inline'; object-src 'self'; connect-src 'self' https://jqterm.now.sh" /> -->
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; worker-src 'unsafe-eval'; script-src 'self' 'unsafe-eval' https://www.googletagmanager.com 'unsafe-inline'; object-src 'self'; connect-src 'self' https://jqterm.now.sh" "https://remy-jqterm.glitch.me" /> -->
 
-  <title>jqterm: jq as a service</title>
-  <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
-  <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
-  <link rel="manifest" href="/manifest.json">
+    <title>jqterm: jq as a service</title>
+    <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
+    <link rel="manifest" href="/manifest.json">
 
-  <script src="./vendor/codemirror/5.48.2/codemirror.min.js"></script>
-  <script src="./vendor/codemirror/5.48.2/mode/javascript/javascript.min.js"></script>
-  <script src="./vendor/codemirror/5.48.2/addon/edit/closebrackets.min.js"></script>
-  <script src="./vendor/codemirror/5.48.2/addon/scroll/scrollpastend.min.js"></script>
-  <script src="./vendor/codemirror/5.48.2/addon/mode/simple.min.js"></script>
-  <script src="./vendor/codemirror/5.48.2/addon/fold/foldcode.min.js"></script>
-  <script src="./vendor/codemirror/5.48.2/addon/fold/foldgutter.min.js"></script>
-  <script src="./vendor/codemirror/5.48.2/addon/fold/brace-fold.min.js"></script>
-  <script src="./vendor/codemirror/5.48.2/addon/display/placeholder.min.js"></script>
-  <script src="./hyperlink.js"></script>
-  <script src="./events.js"></script>
-  <script src="./jq.js"></script>
-  <script src="./autocomplete.js"></script>
-  <link rel="stylesheet" href="./vendor/codemirror/5.48.2/codemirror.css">
-  <link rel="stylesheet" href="./vendor/codemirror/5.48.2/addon/fold/foldgutter.css" />
+    <script src="./vendor/codemirror/5.48.2/codemirror.min.js"></script>
+    <script src="./vendor/codemirror/5.48.2/mode/javascript/javascript.min.js"></script>
+    <script src="./vendor/codemirror/5.48.2/addon/edit/closebrackets.min.js"></script>
+    <script src="./vendor/codemirror/5.48.2/addon/scroll/scrollpastend.min.js"></script>
+    <script src="./vendor/codemirror/5.48.2/addon/mode/simple.min.js"></script>
+    <script src="./vendor/codemirror/5.48.2/addon/fold/foldcode.min.js"></script>
+    <script src="./vendor/codemirror/5.48.2/addon/fold/foldgutter.min.js"></script>
+    <script src="./vendor/codemirror/5.48.2/addon/fold/brace-fold.min.js"></script>
+    <script src="./vendor/codemirror/5.48.2/addon/display/placeholder.min.js"></script>
+    <script src="./hyperlink.js"></script>
+    <script src="./events.js"></script>
+    <script src="./jq.js"></script>
+    <script src="./autocomplete.js"></script>
+    <link rel="stylesheet" href="./vendor/codemirror/5.48.2/codemirror.css">
+    <link rel="stylesheet" href="./vendor/codemirror/5.48.2/addon/fold/foldgutter.css" />
 
-  <link rel="stylesheet" href="./style.css">
-  <link rel="stylesheet" href="./theme.css">
-  <script id="ga" type="browser" src="https://www.googletagmanager.com/gtag/js?id=UA-1656750-53">
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./theme.css">
+    <script id="ga" type="browser" src="https://www.googletagmanager.com/gtag/js?id=UA-1656750-53">
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
     gtag('config', 'UA-1656750-53');
   </script>
-  <script>
-    if (typeof process !== 'undefined') {
-      document.documentElement.classList.add("is-app");
-    } else {
-      var wasmScript = document.createElement('script');
-      wasmScript.src = './vendor/workerize.js';
-      document.head.appendChild(wasmScript);
-      const ga = document.getElementById('ga');
-      const ext = document.createElement('script');
-      ext.async = true;
-      ext.src = ga.src;
-      const gaInline = document.createElement('script');
-      gaInline.innerText = ga.innerText;
-      document.head.appendChild(ext);
-      document.head.appendChild(gaInline);
-    }
-  </script>
+    <script>
+      if (typeof process !== 'undefined') {
+        document.documentElement.classList.add("is-app");
+      } else {
+        var wasmScript = document.createElement('script');
+        wasmScript.src = './vendor/workerize.js';
+        document.head.appendChild(wasmScript);
+        const ga = document.getElementById('ga');
+        const ext = document.createElement('script');
+        ext.async = true;
+        ext.src = ga.src;
+        const gaInline = document.createElement('script');
+        gaInline.innerText = ga.innerText;
+        document.head.appendChild(ext);
+        document.head.appendChild(gaInline);
+      }
+    </script>
 
-</head>
+  </head>
 
-<body>
-  <main>
-    <div id="input">
-      <textarea placeholder="> enter your `jq` query here"></textarea>
-    </div>
-    <div class="editors">
-      <div id="source" class="editor">
-        <div class="controls">
-          <label title="--slurp">
-            Slurp
-            <input type="checkbox" name="slurp" id="slurp" />
-          </label>
-          <label title="--raw-input">
-            Raw
-            <input type="checkbox" name="raw-input" id="raw-input" />
-          </label>
-        </div>
-        <textarea class="cm-target" placeholder="your source json"></textarea>
+  <body>
+    <main>
+      <div id="input">
+        <textarea placeholder="> enter your `jq` query here"></textarea>
       </div>
-      <div id="result" class="editor">
-        <div class="controls">
-          <label title="--raw-output">
-            Raw
-            <input type="checkbox" name="raw" id="raw" />
-          </label>
+      <div class="editors">
+        <div id="source" class="editor">
+          <div class="controls">
+            <label title="--slurp">
+              Slurp
+              <input type="checkbox" name="slurp" id="slurp" />
+            </label>
+            <label title="--raw-input">
+              Raw
+              <input type="checkbox" name="raw-input" id="raw-input" />
+            </label>
+          </div>
+          <textarea class="cm-target" placeholder="your source json"></textarea>
         </div>
+        <div id="result" class="editor">
+          <div class="controls">
+            <label title="--raw-output">
+              Raw
+              <input type="checkbox" name="raw" id="raw" />
+            </label>
+          </div>
 
-        <textarea class="cm-target" readonly></textarea>
+          <textarea class="cm-target" readonly></textarea>
+        </div>
+      </div>
+    </main>
+    <script>
+      if (typeof process !== 'undefined') {
+        document.write('<script src="./app-bridge.js"><\/script>');
+      }
+    </script>
+    <script src="./config.js"></script>
+    <script defer src="./client.js"></script>
+    <div id="help">
+      <div>
+        <ul>
+          <li><span class="keys"><kbd>ctrl</kbd>+<kbd>s</kbd></span><span>Save result</span></li>
+          <li>
+            <span class="keys"><kbd>ctrl</kbd>+<kbd>shift</kbd>+<kbd>t</kbd></span><span>Toggle source</span>
+          </li>
+          <li>
+            <span class="keys"><kbd>ctrl</kbd>+<kbd>shift</kbd>+<kbd>f</kbd></span><span>Format source</span>
+          </li>
+          <li>
+            <span class="keys"><kbd>ctrl</kbd>+<kbd>shift</kbd>+<kbd>d</kbd></span><span>Toggle dark mode</span>
+          </li>
+          <li><span class="keys"><kbd>esc</kbd></span><span>Dismiss help</span></li>
+          <li>
+            <span>🐛 <a target="_new" href="https://github.com/remy/jace/issues/new">Found an issue?</a></span>
+            <span>📖 <a target="_new" href="https://stedolan.github.io/jq/manual/">jq manual</a></span>
+          </li>
+        </ul>
       </div>
     </div>
-  </main>
-  <script>
-    if (typeof process !== 'undefined') {
-      document.write('<script src="./app-bridge.js"><\/script>');
-    }
-  </script>
-  <script src="./config.js"></script>
-  <script defer src="./client.js"></script>
-  <div id="help">
-    <div>
-      <ul>
-        <li><span class="keys"><kbd>ctrl</kbd>+<kbd>s</kbd></span><span>Save result</span></li>
-        <li>
-          <span class="keys"><kbd>ctrl</kbd>+<kbd>shift</kbd>+<kbd>t</kbd></span><span>Toggle source</span>
-        </li>
-        <li>
-          <span class="keys"><kbd>ctrl</kbd>+<kbd>shift</kbd>+<kbd>f</kbd></span><span>Format source</span>
-        </li>
-        <li>
-          <span class="keys"><kbd>ctrl</kbd>+<kbd>shift</kbd>+<kbd>d</kbd></span><span>Toggle dark mode</span>
-        </li>
-        <li><span class="keys"><kbd>esc</kbd></span><span>Dismiss help</span></li>
-        <li>
-          <span>🐛 <a target="_new" href="https://github.com/remy/jace/issues/new">Found an issue?</a></span>
-          <span>📖 <a target="_new" href="https://stedolan.github.io/jq/manual/">jq manual</a></span>
-        </li>
-      </ul>
-    </div>
-  </div>
-</body>
+  </body>
 
 </html>
