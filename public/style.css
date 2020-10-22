@@ -1,6 +1,7 @@
 * {
   /* font-family: 'Operator Mono', Courier New, Courier, monospace; */
-  font-family: "Ubuntu mono", "SF Mono", "Monaco", "Inconsolata", "Fira Mono", "Droid Sans Mono", "Source Code Pro", monospace;
+  font-family: 'Ubuntu mono', 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono',
+    'Droid Sans Mono', 'Source Code Pro', monospace;
 
   font-size: 14px;
   box-sizing: border-box;
@@ -19,7 +20,7 @@
   --c-t-color: #eee;
   --c-object-bg: rgb(58, 58, 58);
   --c-a-color: rgb(22, 168, 255);
-  --c-border-color: rgb(0,0,0);
+  --c-border-color: rgb(0, 0, 0);
 }
 
 body,
@@ -27,9 +28,11 @@ html,
 main {
   margin: 0;
   height: 100%;
+  height: 100vh;
 }
 
-.busy, .busy * {
+.busy,
+.busy * {
   cursor: progress !important;
 }
 
@@ -61,7 +64,7 @@ a {
 
 #input {
   max-height: 40%;
-  overflow: scroll;
+  overflow: auto;
 }
 
 textarea:focus {
@@ -82,7 +85,7 @@ textarea:focus {
 
 .editors {
   flex-grow: 1;
-  height: 100%;
+  height: calc(100% - 50px);
   width: 100%;
   display: flex;
   flex-direction: column-reverse;
@@ -170,14 +173,13 @@ main .editors > div {
   }
 }
 
-
 .CodeMirror-foldmarker {
   display: inline-block;
-  color: #B0BEC5;
+  color: #b0bec5;
   font-weight: bold;
   text-shadow: none;
   font-family: arial;
-  line-height: .3;
+  line-height: 0.3;
   cursor: pointer;
 }
 
@@ -217,7 +219,8 @@ main .editors > div {
 
 #help * {
   font-size: 1.2rem;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 #help li {
@@ -251,7 +254,7 @@ kbd {
 }
 
 kbd {
-  box-shadow: .5px .5px 0 rgba(0,0,0,.2);
+  box-shadow: 0.5px 0.5px 0 rgba(0, 0, 0, 0.2);
   border: 1px solid #ccc;
   margin: 0 4px;
 }
@@ -263,7 +266,6 @@ kbd:first-child {
 kbd.symbol {
   font-family: monospace;
 }
-
 
 #help ul {
   list-style: none;
@@ -290,7 +292,7 @@ kbd.symbol {
   content: 'creating';
   position: fixed;
   z-index: 100;
-  color: #03A9F4;
+  color: #03a9f4;
   font-size: 80%;
   top: 11px;
   right: 35px;
@@ -302,10 +304,10 @@ kbd.symbol {
   width: 20px;
   height: 20px;
   margin: 100px auto;
-  background-color: #03A9F4;
+  background-color: #03a9f4;
   border-radius: 100%;
-  -webkit-animation: sk-scaleout 1.0s infinite ease-in-out;
-  animation: sk-scaleout 1.0s infinite ease-in-out;
+  -webkit-animation: sk-scaleout 1s infinite ease-in-out;
+  animation: sk-scaleout 1s infinite ease-in-out;
   position: fixed;
   top: -90px;
   right: 10px;
@@ -313,9 +315,11 @@ kbd.symbol {
 }
 
 @-webkit-keyframes sk-scaleout {
-  0% { -webkit-transform: scale(0) }
+  0% {
+    -webkit-transform: scale(0);
+  }
   100% {
-    -webkit-transform: scale(1.0);
+    -webkit-transform: scale(1);
     opacity: 0;
   }
 }
@@ -324,9 +328,10 @@ kbd.symbol {
   0% {
     -webkit-transform: scale(0);
     transform: scale(0);
-  } 100% {
-    -webkit-transform: scale(1.0);
-    transform: scale(1.0);
+  }
+  100% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
     opacity: 0;
   }
 }
@@ -361,7 +366,7 @@ kbd.symbol {
   cursor: pointer;
 }
 
-label input[type="checkbox"] {
+label input[type='checkbox'] {
   margin: 0;
   vertical-align: text-top;
 }

@@ -92,7 +92,7 @@
   "optionalDependencies": {},
   "author": "Remy Sharp",
   "devDependencies": {
-    "electron": "^4.0.2",
+    "electron": "^10.1.1",
     "electron-builder": "^20.38.5"
   }
 }
