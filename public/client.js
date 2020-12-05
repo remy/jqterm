@@ -10,6 +10,14 @@ delete CodeMirror.keyMap['default']['Cmd-U'];
 
 if (!window.titlePrefix) window.titlePrefix = 'jqTerm';
 
+if (mobile) {
+  const btn = $('#input button');
+  btn.hidden = false;
+  btn.onclick = () => {
+    exec(input.getValue());
+  }
+}
+
 const root = document.documentElement;
 
 let useWASM = false;
