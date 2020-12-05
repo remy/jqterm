@@ -65,6 +65,16 @@ a {
 #input {
   max-height: 40%;
   overflow: auto;
+  position: relative:
+}
+
+#input button {
+  position: absolute;
+  border: 0;
+  background: var(--c-object-bg);
+  color: var(--c-bg);
+  padding: 2px 4px;
+  right: 8px;
 }
 
 textarea:focus {
