@@ -7,6 +7,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none;
+}
+
 :root {
   --c-bg: white;
   --c-object-bg: rgb(238, 238, 238);
@@ -60,21 +64,26 @@ a {
 #input > .CodeMirror {
   height: auto;
   padding: 10px;
+  padding-right: 50px;
 }
 
 #input {
   max-height: 40%;
   overflow: auto;
-  position: relative:
+  position: relative;
 }
 
 #input button {
   position: absolute;
   border: 0;
-  background: var(--c-object-bg);
+  background: var(--c-t-color);
   color: var(--c-bg);
-  padding: 2px 4px;
+  padding: 4px 8px;
   right: 8px;
+  top: 12px;
+  z-index: 1000;
+  cursor: pointer;
+  border-radius: 2px;
 }
 
 textarea:focus {

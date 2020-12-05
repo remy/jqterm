@@ -1,7 +1,7 @@
 /* eslint-env browser */
 
 /* global wasmScript, CodeMirror, jq, jqTools, events, API, VERSION, hyperlinkOverlay, debounce */
-const mobile = navigator.userAgent.toLowerCase().includes("mobile")
+const mobile = navigator.userAgent.toLowerCase().includes('mobile');
 const $ = (s) => document.querySelector(s);
 const isApp = typeof process !== 'undefined';
 const gistId = getGistId(window.location.toString());
@@ -10,13 +10,11 @@ delete CodeMirror.keyMap['default']['Cmd-U'];
 
 if (!window.titlePrefix) window.titlePrefix = 'jqTerm';
 
-
-  const btn = $('#input button');
-  btn.hidden = mobile;
-  btn.onclick = () => {
-    exec(input.getValue());
-  }
-
+const btn = $('#input button');
+btn.hidden = !mobile;
+btn.onclick = () => {
+  exec(input.getValue());
+};
 
 const root = document.documentElement;
 
@@ -247,7 +245,8 @@ const mirrors = {
   source,
 };
 
-!isApp && !mobile &&
+!isApp &&
+  !mobile &&
   root.addEventListener(
     'keydown',
     (event) => {
@@ -340,7 +339,8 @@ const inputChange = (cm, event) => {
     exec(cm.getValue());
   }
 };
-if (!mobile) input.on('change', isApp ? inputChange : debounce(inputChange, 500));
+if (!mobile)
+  input.on('change', isApp ? inputChange : debounce(inputChange, 500));
 
 $('#slurp').onchange = function () {
   config.slurp = !!this.checked;
@@ -379,7 +379,8 @@ const sourceChange = async (cm, event) => {
   }
 };
 
-if (!mobile) source.on('change', isApp ? sourceChange : debounce(sourceChange, 1000));
+if (!mobile)
+  source.on('change', isApp ? sourceChange : debounce(sourceChange, 1000));
 
 const updateData = async (body, skipExec = false) => {
   root.classList.add('loading');
