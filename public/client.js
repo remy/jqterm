@@ -82,9 +82,9 @@ const setTitle = (config) => {
     opts.push('r');
   }
 
-  document.title = `${window.titlePrefix}${
-    opts.length ? ' -' + opts.join('') : ''
-  } — ${title}`;
+  document.title = `${title}${opts.length ? ' -' + opts.join('') : ''} — ${
+    window.titlePrefix
+  }`;
 };
 
 const guid = (() => {
@@ -245,24 +245,32 @@ const mirrors = {
   source,
 };
 
+function save() {
+  // save
+  const blob = new Blob([result.getValue() || ''], {
+    type: 'application/json',
+  });
+  const anchor = document.createElement('a');
+  anchor.download = `${id}.${config.raw ? 'txt' : 'json'}`;
+  anchor.href = URL.createObjectURL(blob);
+  anchor.click();
+  event.preventDefault();
+}
+
+CodeMirror.commands.save = (cm, event) => {
+  if (cm === input) {
+    if (useWASM) updateData(cm.getValue(), true, false);
+    return;
+  }
+
+  save();
+};
+
 !isApp &&
   !mobile &&
   root.addEventListener(
     'keydown',
     (event) => {
-      if (id && event.code === 'KeyS' && (event.metaKey || event.ctrlKey)) {
-        // save
-        const blob = new Blob([result.getValue() || ''], {
-          type: 'application/json',
-        });
-        const anchor = document.createElement('a');
-        anchor.download = `${id}.${config.raw ? 'txt' : 'json'}`;
-        anchor.href = URL.createObjectURL(blob);
-        anchor.click();
-        event.preventDefault();
-        return;
-      }
-
       if (
         event.shiftKey &&
         event.shiftKey &&
@@ -382,25 +390,30 @@ const sourceChange = async (cm, event) => {
 if (!mobile)
   source.on('change', isApp ? sourceChange : debounce(sourceChange, 1000));
 
-const updateData = async (body, skipExec = false) => {
-  root.classList.add('loading');
-  const res = await fetch(`${API}/${id || ''}?guid=${guid}`, {
-    method: 'post',
-    body,
-  });
+const updateData = async (
+  body,
+  skipExec = false,
+  skipSave = !id && useWASM
+) => {
+  if (!skipSave) {
+    root.classList.add('loading');
+    const res = await fetch(`${API}/${id || ''}?guid=${guid}`, {
+      method: 'post',
+      body,
+    });
 
-  // FIXME deal with 404
-  const json = await res.json();
-  if (json.id && id !== json.id) {
-    id = json.id;
-    window.history.pushState(null, id, getHash());
+    // FIXME deal with 404
+    const json = await res.json();
+    if (json.id && id !== json.id) {
+      id = json.id;
+      window.history.pushState(null, id, getHash());
+    }
+    root.classList.remove('loading');
   }
-  root.classList.remove('loading');
   if (!skipExec) exec(input.getValue());
 };
 
 async function exec(body, reRequest = false) {
-  // if (!id) return;
   window.history.replaceState(null, id, getHash());
 
   let res = null;

@@ -12,20 +12,36 @@
 }
 
 :root {
-  --c-bg: white;
+  --c-bg: #f7f7f7;
+  --c-bg-harsh: white;
   --c-object-bg: rgb(238, 238, 238);
   --c-t-color: black;
   --c-a-color: rgb(2, 119, 189);
   --c-border-color: rgb(204, 204, 204);
+  --c-controls-bg: white;
+  --c-t-alt: #666;
 }
 
-:root.theme-dark {
+@media (prefers-color-scheme: dark) {
+  :root {
+    --c-t-alt: #ccc;
+    --c-bg: #121212;
+    --c-bg-harsh: #000;
+    --c-t-color: #eee;
+    --c-object-bg: rgb(58, 58, 58);
+    --c-a-color: rgb(22, 168, 255);
+    --c-border-color: rgb(0, 0, 0);
+    --c-controls-bg: none;
+  }
+}
+
+/* :root.theme-dark {
   --c-bg: #121212;
   --c-t-color: #eee;
   --c-object-bg: rgb(58, 58, 58);
   --c-a-color: rgb(22, 168, 255);
   --c-border-color: rgb(0, 0, 0);
-}
+} */
 
 body,
 html,
@@ -98,10 +114,6 @@ textarea:focus {
   position: relative;
 }
 
-.theme-light #input {
-  border-bottom: 3px solid #ccc;
-}
-
 .editors {
   flex-grow: 1;
   height: calc(100% - 50px);
@@ -121,15 +133,11 @@ main .editors > div {
   position: relative;
   outline: none;
   height: 50%;
-  background: #f7f7f7;
+  background: var(--c-bg);
 }
 
 #result {
   border-bottom: 3px solid var(--c-border-color);
-}
-
-.theme-light #result {
-  border-color: #ccc;
 }
 
 .editor:before {
@@ -140,7 +148,7 @@ main .editors > div {
   right: 0;
   font-size: 70%;
   padding: 5px 10px 7px 8px;
-  color: #666;
+  color: var(--c-t-alt);
   /* background: black; */
   border-bottom-left-radius: 2px;
 }
@@ -166,11 +174,11 @@ main .editors > div {
     width: 40%;
     max-height: 100%;
     border-bottom: 0;
-    border-right: 3px solid #ccc;
+    border-right: 3px solid var(--c-border-color);
   }
 
-  .theme-dark.input-left.hidden-source #input {
-    border-right: 3px solid black;
+  .input-left.hidden-source #input {
+    border-right: 3px solid var(--c-bg-harsh);
   }
 
   .input-left.hidden-source #input .CodeMirror {
@@ -185,10 +193,6 @@ main .editors > div {
   #result {
     border-bottom: 0;
     border-left: 3px solid var(--c-border-color);
-  }
-
-  .theme-light #result {
-    border-left: 3px solid #ccc;
   }
 }
 
@@ -360,7 +364,7 @@ kbd.symbol {
   top: 20px;
   right: 10px;
   z-index: 10;
-  background: var(--c-bg);
+  background: var(--c-controls-bg);
   opacity: 0.9;
 }
 
@@ -369,7 +373,7 @@ kbd.symbol {
   margin-top: 5px;
   display: block;
   text-align: right;
-  color: rgb(102, 102, 102);
+  color: var(--c-t-alt);
   font-size: 70%;
   text-transform: lowercase;
   letter-spacing: normal;
@@ -380,7 +384,7 @@ kbd.symbol {
 }
 
 .controls button {
-  color: rgb(102, 102, 102);
+  color: var(--c-t-alt);
   font-size: 90%;
   cursor: pointer;
 }
@@ -395,19 +399,15 @@ label input[type='checkbox'] {
 }
 
 .CodeMirror.CodeMirror-focused {
-  background: vra(--c-bg);
+  /* background: var(--c-bg); */
 }
 
 .is-app .editor .controls {
   display: none;
 }
 
-.theme-dark .editor .controls {
-  background: none;
-}
-
-.theme-dark body {
-  background: black;
+body {
+  background: var(--c-bg-harsh);
 }
 
 .CodeMirror .cm-url {
