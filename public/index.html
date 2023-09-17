@@ -83,7 +83,9 @@
     </main>
     <script>
       if (typeof process !== 'undefined') {
-        document.write('<script src="./app-bridge.js"><\/script>');
+        const bridge = document.createElement('script');
+        bridge.src = "./app-bridge.js";
+        document.body.appendChild(bridge);
       }
     </script>
     <script src="./config.js"></script>
