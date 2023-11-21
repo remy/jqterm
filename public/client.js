@@ -258,12 +258,16 @@ function save() {
 }
 
 CodeMirror.commands.save = (cm, event) => {
-  if (cm === input) {
-    if (useWASM) updateData(cm.getValue(), true, false);
+  if (cm === result) {
+    save();
     return;
   }
 
-  save();
+  if (useWASM) {
+    updateData(source.getValue(), true, false);
+  } else {
+    save();
+  }
 };
 
 !isApp &&
