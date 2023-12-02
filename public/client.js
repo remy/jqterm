@@ -19,14 +19,23 @@ btn.onclick = () => {
 const root = document.documentElement;
 
 let useWASM = false;
+let jqInit = false;
 
 if (!isApp) {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js');
   }
   wasmScript.onload = () => {
-    jq.onInitialized = () => {
-      console.log('wasm ready');
+    console.log('wasm ready');
+
+    if (jqInit) {
+      console.log('jq ready');
+      useWASM = true;
+      return;
+    }
+    jq.onRuntimeInitialized = jq.onInitialized = () => {
+      console.log('jq ready');
+      jqInit = true;
       useWASM = true;
     };
   };
@@ -36,6 +45,7 @@ const config = {
   raw: false,
   rawInput: false,
   slurp: false,
+  nullInput: false,
 };
 
 let id = '';
@@ -80,6 +90,9 @@ const setTitle = (config) => {
   }
   if (config.raw) {
     opts.push('r');
+  }
+  if (config.nullInput) {
+    opts.push('n');
   }
 
   document.title = `${title}${opts.length ? ' -' + opts.join('') : ''} — ${
@@ -165,6 +178,10 @@ function getHash() {
     url += '&raw-input=true';
   }
 
+  if (config.nullInput) {
+    url += '&null-input=true';
+  }
+
   if (config.raw) {
     url += '&raw=true';
   }
@@ -192,6 +209,11 @@ function readHash() {
   if (url.searchParams.get('raw-input') === 'true') {
     config.rawInput = true;
     $('#raw-input').checked = true;
+  }
+
+  if (url.searchParams.get('null-input') === 'true') {
+    config.nullInput = true;
+    $('#null-input').checked = true;
   }
 }
 
@@ -368,6 +390,11 @@ $('#raw-input').onchange = function () {
   exec(input.getValue());
 };
 
+$('#null-input').onchange = function () {
+  config.nullInput = !!this.checked;
+  exec(input.getValue());
+};
+
 $('#raw').onchange = function () {
   config.raw = !!this.checked;
   source.setOption('mode', config.raw ? 'text/plain' : 'application/ld+json');
@@ -429,13 +456,14 @@ async function exec(body, reRequest = false) {
         const args = [];
         if (config.slurp) args.push('-s');
         if (config.rawInput) args.push('-R');
+        if (config.nullInput) args.push('-n');
         return jq(source.getValue(), body, args);
       },
     };
     res.status = 200;
   } else {
     res = await fetch(
-      `${API}/${id}?guid=${guid}&slurp=${config.slurp}&raw=${config.raw}&raw-input=${config.rawInput}&_method=PUT`,
+      `${API}/${id}?guid=${guid}&slurp=${config.slurp}&raw=${config.raw}&raw-input=${config.rawInput}&null-input=${config.nullInput}&_method=PUT`,
       {
         method: 'put',
         body,
@@ -468,6 +496,7 @@ async function exec(body, reRequest = false) {
   let output = json;
   window.last = json;
   setTitle(config);
+
   if (config.raw) {
     try {
       output = json

@@ -9,11 +9,11 @@
     let id = `rpc${++counter}`;
     return new Promise((resolve, reject) => {
       callbacks[id] = [
-        res => {
+        (res) => {
           const err = (res.stderr || '')
             .trim()
             .split('\n')
-            .filter(_ => !_.startsWith('exit(0)') && _ != 'undefined');
+            .filter((_) => !_.startsWith('exit(0)') && _ != 'undefined');
 
           if (res.stdout) {
             if (err.length) {
@@ -29,6 +29,10 @@
       ];
       worker.postMessage({ type: RPC, id, method: 'jq', params });
     });
+  };
+
+  jq.onInitialized = () => {
+    jqInit = true;
   };
 
   worker.addEventListener('message', ({ data }) => {

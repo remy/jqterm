@@ -59,23 +59,23 @@ app.get('/:id.json', async (req, res, next) => {
     }
   } catch (error) {
     // try from gist
-    request(`/${id}`)
-      .then(syncToFile(req, res))
-      .catch(next);
+    request(`/${id}`).then(syncToFile(req, res)).catch(next);
     return;
   }
 });
 
-const syncToFile = (req, res) => ({ body, statusCode }) => {
-  if (statusCode > 201) {
-    console.log('fail', error, statusCode);
-    const e = new Error('could not create back end data');
-    e.code = statusCode;
-    throw e;
-  }
+const syncToFile =
+  (req, res) =>
+  ({ body, statusCode }) => {
+    if (statusCode > 201) {
+      console.log('fail', error, statusCode);
+      const e = new Error('could not create back end data');
+      e.code = statusCode;
+      throw e;
+    }
 
-  res.json(writeToFile(body));
-};
+    res.json(writeToFile(body));
+  };
 
 app.post('/', (req, res, next) => {
   // create gist needs to be on /gists - not gists/
@@ -115,30 +115,32 @@ app.put('/:id?', async (req, res) => {
   const path = `${getFilename(id)}.json`;
   const query = req.body.toString();
 
-  let input = path;
+  let input = await readFile(path, 'utf-8');
 
   const options = {
     slurp: req.query.slurp === 'true',
     output: 'pretty',
+    nullInput: req.query['null-input'] === 'true',
+    rawInput: req.query['raw-input'] === 'true',
   };
 
   // emulate --raw-input
   if (req.query['raw-input'] === 'true') {
     options.input = 'string';
-    input = await readFile(path, 'utf-8');
 
     if (options.slurp) {
       // input = input;
       options.input = 'json';
     } else {
       // correct as per command lines
-      input = input.split('\n').map(_ => `"${_}"`);
+      // input = input.split('\n').map((_) => `"${_}"`);
     }
   }
 
   if (!id) {
     input = {
       version: VERSION,
+      jqVersion: '1.6',
       help: 'ctrl + shift + ?',
       macApp: 'https://gum.co/jqterm',
       credit: 'Remy Sharp / @rem',
@@ -147,7 +149,7 @@ app.put('/:id?', async (req, res) => {
     options.input = 'json';
   }
 
-  run({ query, input, options }).then(({ status, result }) => {
+  run({ query, input, options, id }).then(({ status, result }) => {
     res.status(status).json(result);
   });
 });

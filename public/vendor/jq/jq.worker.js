@@ -7,10 +7,10 @@ var Module = {
   // Don't run main on page load
   noInitialRun: true,
   // Print functions
-  print: stdout => STDOUT.push(stdout),
-  printErr: stderr => STDERR.push(stderr),
+  print: (stdout) => STDOUT.push(stdout),
+  printErr: (stderr) => STDERR.push(stderr),
   // When the module is ready
-  onRuntimeInitialized: function() {
+  onRuntimeInitialized: function () {
     console.log('ready');
   },
 };
@@ -49,10 +49,10 @@ self.addEventListener('message', ({ data }) => {
 
   Promise.resolve()
     .then(() => jq.apply(null, data.params))
-    .then(result => {
+    .then((result) => {
       self.postMessage({ type: 'RPC', id, result });
     })
-    .catch(err => {
+    .catch((err) => {
       self.postMessage({ type: 'RPC', id, error: '' + err });
     });
 });

@@ -37,13 +37,15 @@
         wasmScript.src = './vendor/workerize.js';
         document.head.appendChild(wasmScript);
         const ga = document.getElementById('ga');
-        const ext = document.createElement('script');
-        ext.async = true;
-        ext.src = ga.src;
-        const gaInline = document.createElement('script');
-        gaInline.innerText = ga.innerText;
-        document.head.appendChild(ext);
-        document.head.appendChild(gaInline);
+        if (ga) {
+          const ext = document.createElement('script');
+          ext.async = true;
+          ext.src = ga.src;
+          const gaInline = document.createElement('script');
+          gaInline.innerText = ga.innerText;
+          document.head.appendChild(ext);
+          document.head.appendChild(gaInline);
+        }
       }
     </script>
 
@@ -65,6 +67,10 @@
             <label title="--raw-input">
               Raw
               <input type="checkbox" name="raw-input" id="raw-input" />
+            </label>
+            <label title="--null-input">
+              Null
+              <input type="checkbox" name="null-input" id="null-input" />
             </label>
           </div>
           <textarea class="cm-target" placeholder="your source json"></textarea>
