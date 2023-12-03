@@ -247,7 +247,7 @@
   color: var(--cm-var);
 }
 .CodeMirror .cm-variable-2 {
-  color: var(--cm-gutter-marker);
+  color: var(--cm-prop);
 }
 .CodeMirror .cm-variable-3 {
   color: #e5c07b;
