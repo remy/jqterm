@@ -1,3 +1,14 @@
+/**
+ * Netlify Function Handler for jqTerm API
+ * 
+ * This function replaces the Express server routes and handles:
+ * - GET /:id.json - Retrieve gist data
+ * - POST / - Create new gist
+ * - POST /:id - Update existing gist
+ * - PUT /:id? - Execute jq query
+ * - GET /config.js - Serve dynamic configuration
+ */
+
 const {
   makeGistBody,
   run,

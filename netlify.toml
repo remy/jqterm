@@ -1,38 +1,47 @@
+# Netlify configuration for jqTerm
+# This configuration enables the Express server to run as Netlify Functions
+
 [build]
+  # Build command - generates config.js and prepares static assets
   command = "npm run build"
+  # Directory containing serverless functions
   functions = "netlify/functions"
+  # Static files directory
   publish = "public"
 
-# API routes - handle all dynamic routes through the function
+# Route /config.js to the API function for dynamic configuration
 [[redirects]]
   from = "/config.js"
   to = "/.netlify/functions/api/config.js"
   status = 200
 
+# Route /:id.json requests to the API function for gist data retrieval
 [[redirects]]
   from = "/:id.json"
   to = "/.netlify/functions/api/:id.json"
   status = 200
 
-# Handle API POST/PUT requests to root or /:id
+# Route POST/PUT requests to /:id to the API function
 [[redirects]]
   from = "/:id"
   to = "/.netlify/functions/api/:id"
   status = 200
   conditions = {method = ["POST", "PUT"]}
 
+# Route POST/PUT requests to root to the API function
 [[redirects]]
   from = "/"
   to = "/.netlify/functions/api/"
   status = 200
   conditions = {method = ["POST", "PUT"]}
 
-# SPA fallback - must be last
+# SPA fallback - serve index.html for all other routes (must be last)
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
+# Set correct MIME type for WebAssembly files
 [[headers]]
   for = "/vendor/jq/*.wasm"
   [headers.values]
