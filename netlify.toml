@@ -1,0 +1,39 @@
+[build]
+  command = "npm run build"
+  functions = "netlify/functions"
+  publish = "public"
+
+# API routes - handle all dynamic routes through the function
+[[redirects]]
+  from = "/config.js"
+  to = "/.netlify/functions/api/config.js"
+  status = 200
+
+[[redirects]]
+  from = "/:id.json"
+  to = "/.netlify/functions/api/:id.json"
+  status = 200
+
+# Handle API POST/PUT requests to root or /:id
+[[redirects]]
+  from = "/:id"
+  to = "/.netlify/functions/api/:id"
+  status = 200
+  conditions = {method = ["POST", "PUT"]}
+
+[[redirects]]
+  from = "/"
+  to = "/.netlify/functions/api/"
+  status = 200
+  conditions = {method = ["POST", "PUT"]}
+
+# SPA fallback - must be last
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/vendor/jq/*.wasm"
+  [headers.values]
+    Content-Type = "application/wasm"
