@@ -36,7 +36,7 @@ const request = require('request-promise-native').defaults({
 
 const syncToFile = ({ body, statusCode }) => {
   if (statusCode > 201) {
-    console.log('fail', statusCode);
+    console.log('GitHub API request failed with status:', statusCode);
     const e = new Error('could not create back end data');
     e.code = statusCode;
     throw e;
@@ -151,7 +151,7 @@ exports.handler = async (event, context) => {
     if (method === 'PUT') {
       const id = (path === '/' || path === '') ? null : path.replace('/', '');
       const filepath = id ? `${getFilename(id)}.json` : null;
-      const query = event.body.toString();
+      const query = event.body ? event.body.toString() : '';
 
       let input;
 
