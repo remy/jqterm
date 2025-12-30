@@ -17,7 +17,7 @@ express.static.mime.types['wasm'] = 'application/wasm';
 
 require('@remy/envy');
 
-const config = `const VERSION="${VERSION}"; const API="${process.env.API}"`;
+const config = `const VERSION="${VERSION}"; const API="${process.env.URL || process.env.API}"`;
 
 const request = require('request-promise-native').defaults({
   baseUrl: 'https://api.github.com/gists',
