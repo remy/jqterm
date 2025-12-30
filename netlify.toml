@@ -14,18 +14,21 @@
   from = "/config.js"
   to = "/.netlify/functions/api/config.js"
   status = 200
+  force = true
 
 # Route /:id.json requests to the API function for gist data retrieval
 [[redirects]]
   from = "/:id.json"
   to = "/.netlify/functions/api/:id.json"
   status = 200
+  force = true
 
 # Route POST/PUT requests to /:id to the API function
 [[redirects]]
   from = "/:id"
   to = "/.netlify/functions/api/:id"
   status = 200
+  force = true
   conditions = {method = ["POST", "PUT"]}
 
 # Route POST/PUT requests to root to the API function
@@ -33,6 +36,7 @@
   from = "/"
   to = "/.netlify/functions/api/"
   status = 200
+  force = true
   conditions = {method = ["POST", "PUT"]}
 
 # SPA fallback - serve index.html for all other routes (must be last)
